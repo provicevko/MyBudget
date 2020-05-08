@@ -6,7 +6,7 @@ namespace PConsole
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            
         }
     }
 }

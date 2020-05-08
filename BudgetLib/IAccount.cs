@@ -1,9 +1,9 @@
 ﻿namespace BudgetLib
 {
-    public interface IBudget
+    public interface IAccount
     {
         void Put(decimal sum);
         decimal Withdraw(decimal sum);
-        void Transfer(int id,decimal sum);
+        void Transfer(Account account,decimal sum);
     }
 }
