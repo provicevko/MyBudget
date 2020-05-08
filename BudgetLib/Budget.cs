@@ -5,8 +5,8 @@ namespace BudgetLib
 {
     public class Budget<T> where T : Account
     {
-        internal event BudgetStateHandler FindAccountEvent;
-        internal event BudgetStateHandler ChooseAccountEvent;
+        public event BudgetStateHandler FindAccountEvent;
+        public event BudgetStateHandler ChooseAccountEvent;
         private List<T> _accounts = new List<T>();
         public string Name { get; private set; }
         public T CurrentObj { get; private set; }
@@ -125,6 +125,20 @@ namespace BudgetLib
             return null;
         }
 
+        public List<int> GetListAccountsId
+        {
+            get
+            {
+                List<int> accountsIds = new List<int>();
+                foreach (var account in _accounts)
+                {
+                    accountsIds.Add(account.Id);
+                }
+
+                return accountsIds;
+            }
+        }
+
         public void ChooseCurrentAccount(int id)
         {
             T account = FindAccount(id);
@@ -133,6 +147,8 @@ namespace BudgetLib
                 OnChooseAccount(new BudgetEventArgs("Неможливо змінити рахунок. Такого рахунка не існує."));
                 throw new NullReferenceException("Not choosen account");
             }
+
+            CurrentObj = account;
             OnChooseAccount(new BudgetEventArgs($"Рахунок змінений на рахунок з id {account.Id}"));
         }
         public void Put(decimal sum)
