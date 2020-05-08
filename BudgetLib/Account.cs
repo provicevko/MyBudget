@@ -4,12 +4,12 @@ namespace BudgetLib
 {
     public abstract class Account : IAccount
     {
-        protected internal event BudgetStateHandler OpenEvent;
-        protected internal event BudgetStateHandler CloseEvent;
-        protected internal event BudgetStateHandler PutEvent;
-        protected internal event BudgetStateHandler WithdrawEvent;
-        protected internal event BudgetStateHandler TransferEvent;
-        protected internal event BudgetStateHandler LimitOverflowEvent;
+        protected internal event AccountStateHandler OpenEvent;
+        protected internal event AccountStateHandler CloseEvent;
+        protected internal event AccountStateHandler PutEvent;
+        protected internal event AccountStateHandler WithdrawEvent;
+        protected internal event AccountStateHandler TransferEvent;
+        protected internal event AccountStateHandler LimitOverflowEvent;
         public decimal Sum { get; private set; }
         public decimal Limit { get; protected set; }
         public int Id { get;}
@@ -23,7 +23,7 @@ namespace BudgetLib
             Id=++_idCounter;
         }
 
-        private void CallEvent(BugetEventArgs e,BudgetStateHandler handler)
+        private void CallEvent(AccountEventArgs e,AccountStateHandler handler)
         {
             if (e != null)
             {
@@ -31,39 +31,39 @@ namespace BudgetLib
             }
         }
 
-        protected virtual void OnOpened(BugetEventArgs e) => CallEvent(e,OpenEvent);
-        protected virtual void OnClosed(BugetEventArgs e) => CallEvent(e,CloseEvent);
-        protected virtual void OnPut(BugetEventArgs e) => CallEvent(e,PutEvent);
-        protected virtual void OnWithdrawed(BugetEventArgs e) => CallEvent(e,WithdrawEvent);
-        protected virtual void OnTransfer(BugetEventArgs e) => CallEvent(e,TransferEvent);
-        protected virtual void OnLimitOverflow(BugetEventArgs e) => CallEvent(e,LimitOverflowEvent);
+        protected virtual void OnOpened(AccountEventArgs e) => CallEvent(e,OpenEvent);
+        protected virtual void OnClosed(AccountEventArgs e) => CallEvent(e,CloseEvent);
+        protected virtual void OnPut(AccountEventArgs e) => CallEvent(e,PutEvent);
+        protected virtual void OnWithdrawed(AccountEventArgs e) => CallEvent(e,WithdrawEvent);
+        protected virtual void OnTransfer(AccountEventArgs e) => CallEvent(e,TransferEvent);
+        protected virtual void OnLimitOverflow(AccountEventArgs e) => CallEvent(e,LimitOverflowEvent);
 
-        protected internal virtual void Opened() => OnOpened(new BugetEventArgs($"Відкритий новий рахунок. Ідентифікатор рахунку: {Id}",Sum) );
-        protected internal virtual void OnClosed() => OnClosed(new BugetEventArgs($"Рахунок закритий. Ідентифікатор рахунку: {Id}",Sum) );
+        protected internal virtual void Opened() => OnOpened(new AccountEventArgs($"Відкритий новий рахунок. Ідентифікатор рахунку: {Id}",Sum) );
+        protected internal virtual void Closed() => OnClosed(new AccountEventArgs($"Рахунок закритий. Ідентифікатор рахунку: {Id}",Sum) );
         
         public virtual void Put(decimal sum)
         {
             if (Sum + sum > Limit)
             {
                 string message = $"Не можливо покласти на рахунок: сума перевищує ліміт рахунку ({Limit}).\nЗменшіть суму, або змініть тип рахунку.";
-                OnLimitOverflow(new BugetEventArgs(message,Limit));
+                OnLimitOverflow(new AccountEventArgs(message,Limit));
                 return;
             }
 
             Sum += sum;
-            OnPut(new BugetEventArgs($"Рахунок поповнений на {sum} грн.",sum));
+            OnPut(new AccountEventArgs($"Рахунок поповнений на {sum} грн.",sum));
         }
 
         public virtual decimal Withdraw(decimal sum)
         {
             if (sum > Sum)
             {
-                OnWithdrawed(new BugetEventArgs("Недостатньо коштів на рахунку. Поточний баланс: {Sum} грн.",0));
+                OnWithdrawed(new AccountEventArgs("Недостатньо коштів на рахунку. Поточний баланс: {Sum} грн.",0));
                 return 0;
             }
 
             Sum -= sum;
-            OnWithdrawed(new BugetEventArgs($"З рахунку знято {sum} грн.",sum));
+            OnWithdrawed(new AccountEventArgs($"З рахунку знято {sum} грн.",sum));
             return sum;
         }
 
@@ -77,21 +77,21 @@ namespace BudgetLib
                     {
                         Sum -= sum;
                         account.Sum += sum;
-                        OnTransfer(new BugetEventArgs($"Переведено на рахунок з id {account.Id}.",sum));
+                        OnTransfer(new AccountEventArgs($"Переведено на рахунок з id {account.Id}.",sum));
                     }
                     else
                     {
-                        OnTransfer(new BugetEventArgs($"Неможливо перевести на рахунок з id {account.Id}.",0));
+                        OnTransfer(new AccountEventArgs($"Неможливо перевести на рахунок з id {account.Id}.",0));
                     }
                 }
                 else
                 {
-                    OnTransfer(new BugetEventArgs("Недостатньо коштів на даному рахунку для переводу.",0));
+                    OnTransfer(new AccountEventArgs("Недостатньо коштів на даному рахунку для переводу.",0));
                 }
             }
             else
             {
-                OnTransfer(new BugetEventArgs("Неможливо знайти рахунок для здійснення операції переводу.",0));
+                OnTransfer(new AccountEventArgs("Неможливо знайти рахунок для здійснення операції переводу.",0));
             }
         }
         
