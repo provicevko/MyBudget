@@ -101,6 +101,7 @@ namespace BudgetLib
                     return instance;
                 }
             }
+            OnFindAccount(new BudgetEventArgs("Рахунок не знайдений."));
             return null;
         }
 
@@ -118,7 +119,16 @@ namespace BudgetLib
             }
         }
 
-        public void ToHistory(int id,Account.TypeHistoryEvent type,string message,decimal sum)
+        private void ToHistory(Account account,Account.TypeHistoryEvent type,string message,decimal sum)
+        {
+            Account.HistoryStruct historyStruct;
+            historyStruct.Type = type;
+            historyStruct.Message = message;
+            historyStruct.Sum = sum;
+            account._historyAccount.historyList.Add(historyStruct);
+        }
+
+        public Account.HistoryAccount HistoryInfo(int id)
         {
             T account = FindAccount(id);
             if (account == null)
@@ -126,8 +136,8 @@ namespace BudgetLib
                 OnFindAccount(new BudgetEventArgs("Неможливо знайти рахунок. Такого рахунка не існує."));
                 throw new NullReferenceException("Not choosen account");
             }
-
-            account._historyAccount
+            
+            return account._historyAccount;
         }
         public void GetAccountInfo(int id)
         {
@@ -140,5 +150,18 @@ namespace BudgetLib
             BudgetEventArgs info = new BudgetEventArgs($"Інформація про рахунок з id {id}:",account.Sum){Id = id,Type = account.Type,Limit = account.Limit};
             OnAccountInfo(info);
         }
+
+        // public void ChangeTypeAccount(int id, AccountType type)
+        // {
+        //     T account = FindAccount(id);
+        //     if (account == null)
+        //     {
+        //         OnFindAccount(new BudgetEventArgs("Неможливо знайти рахунок. Такого рахунка не існує."));
+        //         throw new NullReferenceException("Not choosen account");
+        //     }
+        //
+        //     account.Type = $"{type}";
+        //     OnAccountInfo(new BudgetEventArgs($"Тип рахунку (id {id}) змінений на {type}"));
+        // }
     }
 }

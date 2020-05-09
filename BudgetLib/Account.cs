@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace BudgetLib
@@ -14,7 +15,7 @@ namespace BudgetLib
         public decimal Sum { get; private set; }
         public decimal Limit { get; protected set; }
         public int Id { get; }
-        public string Type { get; protected set; }
+        public string Type { get; protected internal set; }
 
         private static int _idCounter = 0;
         
@@ -31,20 +32,23 @@ namespace BudgetLib
             GetMoney,
             GivenMoney
         }
-        protected internal struct HistoryStruct
+
+        public struct HistoryStruct
         {
             public string Message;
-            public TypeHistoryEvent type;
+            public TypeHistoryEvent Type;
             public decimal Sum;
         }
         protected internal HistoryAccount _historyAccount;
-        protected internal class HistoryAccount
+
+        public class HistoryAccount
         {
-            public List<HistoryStruct> historyList { get; internal set;}
-            public HistoryAccount()
+            public List<HistoryStruct> historyList { get; protected internal set;}
+            protected internal HistoryAccount()
             {
                 historyList = new List<HistoryStruct>();
             }
+            
         }
         private void CallEvent(AccountEventArgs e, AccountStateHandler handler)
         {
@@ -67,7 +71,7 @@ namespace BudgetLib
         protected internal virtual void Closed() =>
             OnClosed(new AccountEventArgs($"Рахунок закритий. Ідентифікатор рахунку: {Id}", Sum));
 
-        public virtual void Put(decimal sum)
+        public virtual bool Put(decimal sum)
         {
             if (sum > 0)
             {
@@ -76,33 +80,35 @@ namespace BudgetLib
                     string message =
                         $"Не можливо покласти на рахунок: сума перевищує ліміт рахунку ({Limit}).\nЗменшіть суму, або змініть тип рахунку.";
                     OnLimitOverflow(new AccountEventArgs(message, Limit));
-                    return;
+                    return false;
                 }
 
                 Sum += sum;
                 OnPut(new AccountEventArgs($"Рахунок успішно поповнений на {sum} грн.", sum));
+                return true;
             }
             else
             {
                 OnPut(new AccountEventArgs($"Неможливо поповнити на {sum} грн.", sum));
+                return false;
                 // throw new ArgumentException("sum must be more than 0");
             }
         }
 
-        public virtual decimal Withdraw(decimal sum)
+        public virtual bool Withdraw(decimal sum)
         {
             if (sum > Sum)
             {
                 OnWithdrawed(new AccountEventArgs("Недостатньо коштів на рахунку. Поточний баланс: {Sum} грн.", 0));
-                return 0;
+                return false;
             }
 
             Sum -= sum;
             OnWithdrawed(new AccountEventArgs($"З рахунку знято {sum} грн.", sum));
-            return sum;
+            return true;
         }
 
-        public virtual void Transfer(Account account, decimal sum)
+        public virtual bool Transfer(Account account, decimal sum)
         {
             if (Sum > sum)
             {
@@ -111,15 +117,18 @@ namespace BudgetLib
                     Sum -= sum;
                     account.Sum += sum;
                     OnTransfer(new AccountEventArgs($"Переведено на рахунок з id {account.Id} - {sum} грн.", sum));
+                    return true;
                 }
                 else
                 {
                     OnTransfer(new AccountEventArgs($"Неможливо перевести на рахунок з id {account.Id}. Сумма перевищує ліміт рахунку", 0));
+                    return false;
                 }
             }
             else
             {
                 OnTransfer(new AccountEventArgs("Недостатньо коштів на даному рахунку для переводу.", 0));
+                return false;
             }
         }
     }

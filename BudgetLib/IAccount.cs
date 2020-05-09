@@ -2,8 +2,8 @@
 {
     public interface IAccount
     {
-        void Put(decimal sum);
-        decimal Withdraw(decimal sum);
-        void Transfer(Account account,decimal sum);
+        bool Put(decimal sum);
+        bool Withdraw(decimal sum);
+        bool Transfer(Account account,decimal sum);
     }
 }
