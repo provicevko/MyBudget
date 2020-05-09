@@ -23,8 +23,29 @@ namespace BudgetLib
             Sum = sum;
             Limit = limit;
             Id = ++_idCounter;
+            _historyAccount = new HistoryAccount();
         }
 
+        public enum TypeHistoryEvent
+        {
+            GetMoney,
+            GivenMoney
+        }
+        protected internal struct HistoryStruct
+        {
+            public string Message;
+            public TypeHistoryEvent type;
+            public decimal Sum;
+        }
+        protected internal HistoryAccount _historyAccount;
+        protected internal class HistoryAccount
+        {
+            public List<HistoryStruct> historyList { get; internal set;}
+            public HistoryAccount()
+            {
+                historyList = new List<HistoryStruct>();
+            }
+        }
         private void CallEvent(AccountEventArgs e, AccountStateHandler handler)
         {
             if (e != null)

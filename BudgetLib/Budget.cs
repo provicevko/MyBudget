@@ -118,7 +118,7 @@ namespace BudgetLib
             }
         }
 
-        public void ToHistory(int id,string message)
+        public void ToHistory(int id,Account.TypeHistoryEvent type,string message,decimal sum)
         {
             T account = FindAccount(id);
             if (account == null)
@@ -127,6 +127,7 @@ namespace BudgetLib
                 throw new NullReferenceException("Not choosen account");
             }
 
+            account._historyAccount
         }
         public void GetAccountInfo(int id)
         {
