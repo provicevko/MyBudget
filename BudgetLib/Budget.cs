@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 namespace BudgetLib
 {
-    public class Budget<T> where T : Account
+    public partial class Budget<T> where T : Account
     {
         public event BudgetStateHandler FindAccountEvent;
-        public event BudgetStateHandler ChooseAccountEvent;
+        public event BudgetStateHandler AccountInfo;
         private List<T> _accounts = new List<T>();
         public string Name { get; private set; }
         public T CurrentObj { get; private set; }
@@ -34,7 +34,7 @@ namespace BudgetLib
         }
 
         private void OnFindAccount(BudgetEventArgs e) => CallEvent(e, FindAccountEvent);
-        private void OnChooseAccount(BudgetEventArgs e) => CallEvent(e, ChooseAccountEvent);
+        private void OnAccountInfo(BudgetEventArgs e) => CallEvent(e, AccountInfo);
         public void OpenAccount(AccountType type, decimal sum, AccountStateHandler openHandler, AccountStateHandler closeHandler, AccountStateHandler putHandler,
             AccountStateHandler withdrawHandler, AccountStateHandler transferHandler, AccountStateHandler limitOverflowHandler)
         {
@@ -82,27 +82,13 @@ namespace BudgetLib
             newAccount.Opened();
             newAccount.OpenEvent -= openHandler;
         }
-
-        public void CloseAccount()
-        {
-            if (CurrentObj == null)
-            {
-                OnChooseAccount(new BudgetEventArgs("Неможливо виконати операцію. Рахунок не вибраний"));
-                throw new NullReferenceException("Not choosen account");
-            }
-            CurrentObj.Closed();
-            bool flag = _accounts.Remove(CurrentObj);
-            if (!flag)
-            {
-                throw new ArgumentOutOfRangeException("CurrentObj");
-            }
-        }
+        
         public void CloseAccount(int id)
         {
             T account = FindAccount(id);
             if (account == null)
             {
-                OnChooseAccount(new BudgetEventArgs("Неможливо виконати операцію. Рахунок не вибраний"));
+                OnFindAccount(new BudgetEventArgs("Неможливо виконати операцію. Рахунок не вибраний"));
                 throw new NullReferenceException("Not choosen account");
             }
             account.Closed();
@@ -139,38 +125,16 @@ namespace BudgetLib
             }
         }
 
-        public void ChooseCurrentAccount(int id)
+        public void GetAccountInfo(int id)
         {
             T account = FindAccount(id);
             if (account == null)
             {
-                OnChooseAccount(new BudgetEventArgs("Неможливо змінити рахунок. Такого рахунка не існує."));
+                OnFindAccount(new BudgetEventArgs("Неможливо знайти рахунок. Такого рахунка не існує."));
                 throw new NullReferenceException("Not choosen account");
             }
-
-            CurrentObj = account;
-            OnChooseAccount(new BudgetEventArgs($"Рахунок змінений на рахунок з id {account.Id}"));
-        }
-        public void Put(decimal sum)
-        {
-            if (CurrentObj == null)
-            {
-                OnFindAccount(new BudgetEventArgs("Поточний рахунок для здійснення операції не вибраний."));
-                throw new NullReferenceException("Not choosen account");
-            }
-
-            CurrentObj.Put(sum);
-        }
-
-        public void Withdraw(decimal sum)
-        {
-            if (CurrentObj == null)
-            {
-                OnFindAccount(new BudgetEventArgs("Поточний рахунок для здійснення операції не вибраний."));
-                throw new NullReferenceException("Not choosen account");
-            }
-
-            CurrentObj.Withdraw(sum);
+            BudgetEventArgs info = new BudgetEventArgs($"Інформація про рахунок з id {id}:",account.Sum){Id = id,Type = account.Type,Limit = account.Limit};
+            OnAccountInfo(info);
         }
     }
 }

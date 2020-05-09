@@ -4,10 +4,15 @@
     public class BudgetEventArgs
     {
         public string Message { get; private set; }
+        public int Id { get; internal set; }
+        public string Type { get; internal set; }
+        public decimal Limit { get; internal set; }
+        public decimal Sum { get;}
 
-        public BudgetEventArgs(string message)
+        public BudgetEventArgs(string message,decimal sum = 0)
         {
             Message = message;
+            Sum = sum;
         }
     }
 }

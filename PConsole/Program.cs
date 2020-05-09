@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using BudgetLib;
 
 namespace PConsole
@@ -10,24 +11,24 @@ namespace PConsole
             Console.OutputEncoding = System.Text.Encoding.Default;
             Budget<Account> budget = new Budget<Account>("Provice budget!");
             budget.FindAccountEvent += BudgetHandler.FindAccountHandler;
-            budget.ChooseAccountEvent += BudgetHandler.ChooseAccountHandler;
+            budget.AccountInfo += BudgetHandler.AccountInfoHandler;
             budget.OpenAccount(AccountType.Small,500,AccountHandler.OpenHandler,AccountHandler.CloseHandler, AccountHandler.PuHandler,
                 AccountHandler.WithdrawHandler,AccountHandler.TransferHandler,AccountHandler.LimitHandler);
-            budget.OpenAccount(AccountType.Middle,500,AccountHandler.OpenHandler,AccountHandler.CloseHandler, AccountHandler.PuHandler,
+            budget.OpenAccount(AccountType.Middle,5000,AccountHandler.OpenHandler,AccountHandler.CloseHandler, AccountHandler.PuHandler,
                 AccountHandler.WithdrawHandler,AccountHandler.TransferHandler,AccountHandler.LimitHandler);
-            budget.OpenAccount(AccountType.Premium,500,AccountHandler.OpenHandler,AccountHandler.CloseHandler, AccountHandler.PuHandler,
+            budget.OpenAccount(AccountType.Premium,500000,AccountHandler.OpenHandler,AccountHandler.CloseHandler, AccountHandler.PuHandler,
                 AccountHandler.WithdrawHandler,AccountHandler.TransferHandler,AccountHandler.LimitHandler);
-            // budget.ChooseCurrentAccount(2);
-            budget.CloseAccount(2);
-            foreach (var id in budget.GetListAccountsId)
-            {
-                Console.WriteLine(id);
-            }
+            budget.GetAccountInfo(2);
+            budget.GetAccountInfo(3);
+            budget.Put(1,200);
+            budget.GetAccountInfo(1);
+            budget.Withdraw(1,600);
+            budget.GetAccountInfo(1);
+            budget.Transfer(2,1,500);
+            budget.GetAccountInfo(1);
+            budget.GetAccountInfo(2);
 
-
-
-
-
+            
             // bool alive = true;
             // while (alive)
             // {

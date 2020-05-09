@@ -3,7 +3,7 @@ using BudgetLib;
 
 namespace PConsole
 {
-    public class AccountHandler
+    public static class AccountHandler
     {
         internal static void OpenHandler(object sender, AccountEventArgs e) => Console.WriteLine(e.Message);
         internal static void CloseHandler(object sender, AccountEventArgs e) => Console.WriteLine(e.Message);
