@@ -111,7 +111,7 @@ namespace PConsole
                 return;
             }
             Console.WriteLine("Історія операцій:");
-            Account.HistoryAccount hst = budget.HistoryInfo(1);
+            Account.HistoryAccount hst = budget.HistoryInfo(id);
             decimal sum = 0;
             foreach (var val in hst.historyList)
             {

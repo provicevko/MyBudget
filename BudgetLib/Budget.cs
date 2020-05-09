@@ -38,7 +38,7 @@ namespace BudgetLib
                 case AccountType.Small:
                     if (sum > 1000)
                     {
-                        throw new ArgumentException("Sum on account type 'SMALL' must be less than 100");
+                        throw new ArgumentException("Sum on account type 'SMALL' must be less than 1000");
                     }
                     newAccount = new SmallAccount(sum) as T;
                     break;
