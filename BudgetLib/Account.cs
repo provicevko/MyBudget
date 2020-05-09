@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace BudgetLib
 {
@@ -14,8 +15,9 @@ namespace BudgetLib
         public decimal Limit { get; protected set; }
         public int Id { get; }
         public string Type { get; protected set; }
-        private static int _idCounter = 0;
 
+        private static int _idCounter = 0;
+        
         public Account(decimal sum, decimal limit)
         {
             Sum = sum;

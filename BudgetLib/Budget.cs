@@ -9,20 +9,13 @@ namespace BudgetLib
         public event BudgetStateHandler AccountInfo;
         private List<T> _accounts = new List<T>();
         public string Name { get; private set; }
-        public T CurrentObj { get; private set; }
-    
         public Budget(string name)
         {
-            if (name != null)
-            {
-                Name = name;
-            }
-            else
+            if (name == null)
             {
                 Name = "My budget";
-            }
-
-            CurrentObj = null;
+            } 
+            Name = name;
         }
 
         private void CallEvent(BudgetEventArgs e, BudgetStateHandler handler)
@@ -38,7 +31,7 @@ namespace BudgetLib
         public void OpenAccount(AccountType type, decimal sum, AccountStateHandler openHandler, AccountStateHandler closeHandler, AccountStateHandler putHandler,
             AccountStateHandler withdrawHandler, AccountStateHandler transferHandler, AccountStateHandler limitOverflowHandler)
         {
-            T newAccount = null;
+            T newAccount = default(T);
 
             switch (type)
             {
@@ -125,6 +118,16 @@ namespace BudgetLib
             }
         }
 
+        public void ToHistory(int id,string message)
+        {
+            T account = FindAccount(id);
+            if (account == null)
+            {
+                OnFindAccount(new BudgetEventArgs("Неможливо знайти рахунок. Такого рахунка не існує."));
+                throw new NullReferenceException("Not choosen account");
+            }
+
+        }
         public void GetAccountInfo(int id)
         {
             T account = FindAccount(id);

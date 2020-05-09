@@ -9,7 +9,7 @@ namespace PConsole
         static void Main(string[] args)
         {
             Console.OutputEncoding = System.Text.Encoding.Default;
-            Budget<Account> budget = new Budget<Account>("Provice budget!");
+            Budget<Account> budget = new Budget<Account>("Provice budget");
             budget.FindAccountEvent += BudgetHandler.FindAccountHandler;
             budget.AccountInfo += BudgetHandler.AccountInfoHandler;
             budget.OpenAccount(AccountType.Small,500,AccountHandler.OpenHandler,AccountHandler.CloseHandler, AccountHandler.PuHandler,
@@ -27,8 +27,9 @@ namespace PConsole
             budget.Transfer(2,1,500);
             budget.GetAccountInfo(1);
             budget.GetAccountInfo(2);
-
             
+
+
             // bool alive = true;
             // while (alive)
             // {

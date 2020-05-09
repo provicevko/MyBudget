@@ -6,7 +6,6 @@ namespace PConsole
     public static class BudgetHandler
     {
         internal static void FindAccountHandler(object sender, BudgetEventArgs e) => Console.WriteLine(e.Message);
-        internal static void ChooseAccountHandler(object sender, BudgetEventArgs e) => Console.WriteLine(e.Message);
 
         internal static void AccountInfoHandler(object sender, BudgetEventArgs e)
         {
