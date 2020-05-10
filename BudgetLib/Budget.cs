@@ -11,10 +11,6 @@ namespace BudgetLib
         public string Name { get; private set; }
         public Budget(string name)
         {
-            if (name == null)
-            {
-                Name = "My budget";
-            } 
             Name = name;
         }
 
@@ -82,13 +78,13 @@ namespace BudgetLib
             if (account == null)
             {
                 OnFindAccount(new BudgetEventArgs("Неможливо виконати операцію. Рахунок не вибраний"));
-                throw new NullReferenceException("Not choosen account");
+                throw new NullReferenceException("Not find account");
             }
             account.Closed();
             bool flag = _accounts.Remove(account);
             if (!flag)
             {
-                throw new ArgumentOutOfRangeException("CurrentObj");
+                throw new ArgumentOutOfRangeException("Account wasn't remove from budget");
             }
         }
 
@@ -134,7 +130,7 @@ namespace BudgetLib
             if (account == null)
             {
                 OnFindAccount(new BudgetEventArgs("Неможливо знайти рахунок. Такого рахунка не існує."));
-                throw new NullReferenceException("Not choosen account");
+                throw new NullReferenceException("Not find account with such id");
             }
             
             return account._historyAccount;
@@ -145,7 +141,7 @@ namespace BudgetLib
             if (account == null)
             {
                 OnFindAccount(new BudgetEventArgs("Неможливо знайти рахунок. Такого рахунка не існує."));
-                throw new NullReferenceException("Not choosen account");
+                throw new NullReferenceException("Not find account with such id");
             }
             BudgetEventArgs info = new BudgetEventArgs($"Інформація про рахунок з id {id}:",account.Sum){Id = id,Type = account.Type,Limit = account.Limit};
             OnAccountInfo(info);

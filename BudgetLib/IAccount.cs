@@ -1,9 +1,9 @@
 ﻿namespace BudgetLib
 {
-    public interface IAccount
+    internal interface IAccount
     {
-        bool Put(decimal sum);
-        bool Withdraw(decimal sum);
-        bool Transfer(Account account,decimal sum);
+        public bool Put(decimal sum);
+        public bool Withdraw(decimal sum);
+        public bool Transfer(Account account,decimal sum);
     }
 }

@@ -38,15 +38,15 @@ namespace PConsole
             //         Console.WriteLine(item.Sum+" грн.");
             //     }
             // }
-            
+            string description = "Команди:\n<> 'new' - відкрити новий рахунок.\n<> 'put' - покласти на рахунок.\n<> 'withdraw' - вивести з рахунку.\n" +
+                                 "<> 'transfer' - перевести на інший рахунок.\n<> 'search' - пошук рахунку.\n<> 'mylist' - список моїх рахунків\n" +
+                                 "<> 'ainfo' - інформація про рахунок.\n<> 'hinfo' - історія операцій.\n<> 'close' - закрити рахунок.\n" +
+                                 "<> help\n<> 'exit' - вихід.";
+            Console.WriteLine(description);
 
             bool alive = true;
             while (alive)
             {
-                string description = "Команди:\n1. 'new' - відкрити новий рахунок.\n2. 'put' - покласти на рахунок.\n3. 'withdraw' - вивести з рахунку.\n" +
-                                     "4. 'transfer' - перевести на інший рахунок.\n5. 'search' - пошук рахунку.\n6. 'mylist' - список моїх рахунків\n" +
-                                     "7. 'ainfo' - інформація про рахунок.\n8. 'hinfo' - історія операцій.\n9. 'close' - закрити рахунок.\n 10. 'exit' - вихід.";
-                Console.WriteLine(description);
                 try
                 {
                     string command = Convert.ToString(Console.ReadLine());
@@ -76,6 +76,9 @@ namespace PConsole
                         case "hinfo":
                             BudgetUSOperations.HistoryInfo(budget);
                             break;
+                        case "help":
+                            Console.WriteLine(description);
+                            break;
                         case "close":
                             BudgetUSOperations.CloseAccount(budget);
                             break;
@@ -84,9 +87,21 @@ namespace PConsole
                             break;
                     }
                 }
+                catch (ArgumentOutOfRangeException e)
+                {
+                    ErrorHandler.Logs(e.Message);
+                }
+                catch (ArgumentException e)
+                {
+                    ErrorHandler.Logs(e.Message);
+                }
+                catch (NullReferenceException e)
+                {
+                    ErrorHandler.Logs(e.Message);
+                }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
+                    ErrorHandler.Logs(e.Message);
                 }
             }
         }

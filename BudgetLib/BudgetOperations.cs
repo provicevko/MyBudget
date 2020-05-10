@@ -14,10 +14,11 @@ namespace BudgetLib
                 throw new NullReferenceException("Unreal find account");
             }
             bool process = account.Put(sum);
-            if (process)
+            if (!process)
             {
-                ToHistory(account, Account.TypeHistoryEvent.GetMoney, $"<Отримано {DateTime.Now}>", sum);
+                throw new Exception("money wasn't withdrawed. Process error!");
             }
+            ToHistory(account, Account.TypeHistoryEvent.GetMoney, $"<Отримано {DateTime.Now}>", sum);
         }
 
         public void Withdraw(int id,decimal sum)
@@ -30,10 +31,11 @@ namespace BudgetLib
             }
 
             bool process = account.Withdraw(sum);
-            if (process)
+            if (!process)
             {
-                ToHistory(account, Account.TypeHistoryEvent.GivenMoney, $"<Знято {DateTime.Now}>", sum);
+                throw new Exception("money wasn't withdrawed. Process error!");
             }
+            ToHistory(account, Account.TypeHistoryEvent.GivenMoney, $"<Знято {DateTime.Now}>", sum);
         }
 
         public void Transfer(int id1,int id2, decimal sum)
@@ -54,11 +56,12 @@ namespace BudgetLib
             bool process = account1.Transfer(account2,sum);
             if (process)
             {
-                ToHistory(account1, Account.TypeHistoryEvent.GivenMoney,
-                    $"<Переведено на рахунок (id {id2}) {DateTime.Now}>", sum);
-                ToHistory(account2, Account.TypeHistoryEvent.GetMoney,
-                    $"<Отримано переведенням з рахунку (id {id1}) {DateTime.Now}>", sum);
+                throw new Exception("money wasn't withdrawed. Process error!");
             }
+            ToHistory(account1, Account.TypeHistoryEvent.GivenMoney,
+                $"<Переведено на рахунок (id {id2}) {DateTime.Now}>", sum);
+            ToHistory(account2, Account.TypeHistoryEvent.GetMoney,
+                $"<Отримано переведенням з рахунку (id {id1}) {DateTime.Now}>", sum);
         }
     }
 }

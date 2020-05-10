@@ -48,7 +48,6 @@ namespace BudgetLib
             {
                 historyList = new List<HistoryStruct>();
             }
-            
         }
         private void CallEvent(AccountEventArgs e, AccountStateHandler handler)
         {
@@ -91,7 +90,6 @@ namespace BudgetLib
             {
                 OnPut(new AccountEventArgs($"Неможливо поповнити на {sum} грн.", sum));
                 return false;
-                // throw new ArgumentException("sum must be more than 0");
             }
         }
 
@@ -100,7 +98,7 @@ namespace BudgetLib
             if (sum > Sum)
             {
                 OnWithdrawed(new AccountEventArgs("Недостатньо коштів на рахунку. Поточний баланс: {Sum} грн.", 0));
-                return false;
+                throw new ArgumentException("not enough money in this account");
             }
 
             Sum -= sum;
