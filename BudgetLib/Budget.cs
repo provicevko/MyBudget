@@ -86,14 +86,13 @@ namespace BudgetLib
             T account = FindAccount(id);
             if (account == null)
             {
-                OnFindAccount(new BudgetEventArgs("Неможливо виконати операцію. Рахунок не вибраний."));
-                throw new NullReferenceException("Not find account");
+                throw new NullReferenceException($"Unreal find account with id {id}");
             }
             account.Closed();
             bool flag = _accounts.Remove(account);
             if (!flag)
             {
-                throw new ArgumentOutOfRangeException("Account wasn't remove from budget");
+                throw new ArgumentOutOfRangeException($"Account (id {id})wasn't remove from budget");
             }
         }
 
@@ -106,7 +105,7 @@ namespace BudgetLib
                     return instance;
                 }
             }
-            OnFindAccount(new BudgetEventArgs("Рахунок не знайдений."));
+            OnFindAccount(new BudgetEventArgs($"Рахунок з id {id} не знайдений."));
             return null;
         }
 
@@ -138,8 +137,7 @@ namespace BudgetLib
             T account = FindAccount(id);
             if (account == null)
             {
-                OnFindAccount(new BudgetEventArgs("Неможливо знайти рахунок. Такого рахунка не існує."));
-                throw new NullReferenceException("Not find account with such id");
+                throw new NullReferenceException($"Unreal find account with id {id}");
             }
             
             return account._historyAccount;
@@ -149,8 +147,7 @@ namespace BudgetLib
             T account = FindAccount(id);
             if (account == null)
             {
-                OnFindAccount(new BudgetEventArgs("Неможливо знайти рахунок. Такого рахунка не існує."));
-                throw new NullReferenceException("Not find account with such id");
+                throw new NullReferenceException($"Unreal find account with id {id}");
             }
             BudgetEventArgs info = new BudgetEventArgs($"Інформація про рахунок з id {id}:",account.Sum){Id = id,Type = account.Type,Limit = account.Limit,RegData = account.RegData};
             OnAccountInfo(info);

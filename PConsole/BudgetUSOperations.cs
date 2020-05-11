@@ -36,9 +36,15 @@ namespace PConsole
         internal static void AccountIdsList(Budget<Account> budget)
         {
             List<int> ids = budget.GetListAccountsId;
+            if (ids.Count == 0)
+            {
+                Console.WriteLine("Не знайдено жодного рахунку.");
+                return;
+            }
+            Console.WriteLine("Мої рахунки (id):");
             for (int i = 0; i < ids.Count; i++)
             {
-                Console.WriteLine($"{i+1}: {ids[i]}");
+                Console.WriteLine($"\t{ids[i]}");
             }
         }
         

@@ -10,8 +10,7 @@ namespace BudgetLib
             T account = FindAccount(id);
             if (account == null)
             {
-                OnFindAccount(new BudgetEventArgs("Неможливо знайти рахунок. Такого рахунка не існує."));
-                throw new NullReferenceException("Unreal find account");
+                throw new NullReferenceException($"Unreal find account with id {id}");
             }
             bool process = account.Put(sum);
             if (!process)
@@ -26,8 +25,7 @@ namespace BudgetLib
             T account = FindAccount(id);
             if (account == null)
             {
-                OnFindAccount(new BudgetEventArgs("Неможливо знайти рахунок. Такого рахунка не існує."));
-                throw new NullReferenceException("Unreal find account");
+                throw new NullReferenceException($"Unreal find account with id {id}");
             }
 
             bool process = account.Withdraw(sum);
@@ -43,15 +41,13 @@ namespace BudgetLib
             T account1 = FindAccount(id1);
             if (account1 == null)
             {
-                OnFindAccount(new BudgetEventArgs($"Неможливо знайти рахунок з id {id1}. Такого рахунка не існує."));
-                throw new NullReferenceException("Unreal find account with such id");
+                throw new NullReferenceException($"Unreal find account with id {id1}");
             }
 
             T account2 = FindAccount(id2);
             if (account2 == null)
             {
-                OnFindAccount(new BudgetEventArgs($"Неможливо знайти рахунок з id {id2}. Такого рахунка не існує."));
-                throw new NullReferenceException("Not find account with such id");
+                throw new NullReferenceException($"Unreal find account with id {id2}");
             }
             bool process = account1.Transfer(account2,sum);
             if (!process)

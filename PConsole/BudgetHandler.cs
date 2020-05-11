@@ -9,7 +9,7 @@ namespace PConsole
 
         internal static void AccountInfoHandler(object sender, BudgetEventArgs e)
         {
-            Console.WriteLine($"{e.Message}\n\tId: {e.Id}\n\tType: {e.Type}\n\tLimit: {e.Limit}\n\tSum: {e.Sum}");   
+            Console.WriteLine($"{e.Message}\n\tId: {e.Id}\n\tType: {e.Type}\n\tLimit: {e.Limit}\n\tSum: {e.Sum}\n\tRegister data: {e.RegData}");   
         }
 
         internal static void ErrorHandler(object sender, BudgetEventArgs e) => Console.WriteLine(e.Message);
