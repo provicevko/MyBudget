@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading;
+using System.IO;
 using BudgetLib;
 
 namespace PConsole
@@ -13,35 +12,12 @@ namespace PConsole
             Budget<Account> budget = new Budget<Account>("Provice budget");
             budget.FindAccountEvent += BudgetHandler.FindAccountHandler;
             budget.AccountInfo += BudgetHandler.AccountInfoHandler;
-            // budget.OpenAccount(AccountType.Small,100,AccountHandler.OpenHandler,AccountHandler.CloseHandler, AccountHandler.PuHandler,
-            //     AccountHandler.WithdrawHandler,AccountHandler.TransferHandler,AccountHandler.LimitHandler);
-            // budget.OpenAccount(AccountType.Middle,5000,AccountHandler.OpenHandler,AccountHandler.CloseHandler, AccountHandler.PuHandler,
-            //     AccountHandler.WithdrawHandler,AccountHandler.TransferHandler,AccountHandler.LimitHandler);
-            // budget.OpenAccount(AccountType.Premium,500000,AccountHandler.OpenHandler,AccountHandler.CloseHandler, AccountHandler.PuHandler,
-            //     AccountHandler.WithdrawHandler,AccountHandler.TransferHandler,AccountHandler.LimitHandler);
-            // budget.GetAccountInfo(2);
-            // budget.GetAccountInfo(3);
-            // budget.Put(1,200);
-            // budget.GetAccountInfo(1);
-            // budget.Put(1,100);
-            // budget.Put(1,100);
-            // budget.Withdraw(1,20);
-            // budget.Withdraw(1,300);
-            // budget.Transfer(1,2,150);
-            // budget.GetAccountInfo(1);
-            // Account.HistoryAccount hst = budget.HistoryInfo(1);
-            // foreach (var item in hst.historyList)
-            // {
-            //     if (item.Type == Account.TypeHistoryEvent.GivenMoney)
-            //     {
-            //         Console.Write(item.Message+"\t");
-            //         Console.WriteLine(item.Sum+" грн.");
-            //     }
-            // }
+            budget.ErrorAlert += BudgetHandler.ErrorHandler;
+           
             string description = "Команди:\n<> 'new' - відкрити новий рахунок.\n<> 'put' - покласти на рахунок.\n<> 'withdraw' - вивести з рахунку.\n" +
                                  "<> 'transfer' - перевести на інший рахунок.\n<> 'search' - пошук рахунку.\n<> 'mylist' - список моїх рахунків\n" +
                                  "<> 'ainfo' - інформація про рахунок.\n<> 'hinfo' - історія операцій.\n<> 'close' - закрити рахунок.\n" +
-                                 "<> help\n<> 'exit' - вихід.";
+                                 "<> 'help' - список команд.\n<> 'exit' - вихід.";
             Console.WriteLine(description);
 
             bool alive = true;
@@ -82,6 +58,9 @@ namespace PConsole
                         case "close":
                             BudgetUSOperations.CloseAccount(budget);
                             break;
+                        case "exit":
+                            Environment.Exit(0);
+                            break;
                         default:
                             Console.WriteLine("Нерозпізнана команда.");
                             break;
@@ -89,22 +68,29 @@ namespace PConsole
                 }
                 catch (ArgumentOutOfRangeException e)
                 {
-                    ErrorHandler.Logs(e.Message);
+                    Console.WriteLine("Невідома помилка під час виконання. Повторіть процедуру ще раз!");
+                    ErrorHandler.Logs(e);
                 }
                 catch (ArgumentException e)
                 {
-                    ErrorHandler.Logs(e.Message);
+                    ErrorHandler.Logs(e);
                 }
                 catch (NullReferenceException e)
                 {
-                    ErrorHandler.Logs(e.Message);
+                    Console.WriteLine("Виконання процедури було перервано. Перевірте коректність вводу.");
+                    ErrorHandler.Logs(e);
+                }
+                catch (FileLoadException)
+                {
+                    Console.WriteLine("Програма не працює коректно. Спробуйте перезапустити!");
+                    break;
                 }
                 catch (Exception e)
                 {
-                    ErrorHandler.Logs(e.Message);
+                    Console.WriteLine("Виконання процедури було перервано. Перевірте коректність вводу.");
+                    ErrorHandler.Logs(e);
                 }
             }
         }
-        
     }
 }

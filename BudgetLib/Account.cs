@@ -11,11 +11,11 @@ namespace BudgetLib
         protected internal event AccountStateHandler PutEvent;
         protected internal event AccountStateHandler WithdrawEvent;
         protected internal event AccountStateHandler TransferEvent;
-        protected internal event AccountStateHandler LimitOverflowEvent;
         public decimal Sum { get; private set; }
         public decimal Limit { get; protected set; }
         public int Id { get; }
         public string Type { get; protected internal set; }
+        public DateTime RegData { get;}
 
         private static int _idCounter = 0;
         
@@ -24,6 +24,7 @@ namespace BudgetLib
             Sum = sum;
             Limit = limit;
             Id = ++_idCounter;
+            RegData = DateTime.Now;
             _historyAccount = new HistoryAccount();
         }
 
@@ -62,7 +63,6 @@ namespace BudgetLib
         protected virtual void OnPut(AccountEventArgs e) => CallEvent(e, PutEvent);
         protected virtual void OnWithdrawed(AccountEventArgs e) => CallEvent(e, WithdrawEvent);
         protected virtual void OnTransfer(AccountEventArgs e) => CallEvent(e, TransferEvent);
-        protected virtual void OnLimitOverflow(AccountEventArgs e) => CallEvent(e, LimitOverflowEvent);
 
         protected internal virtual void Opened() =>
             OnOpened(new AccountEventArgs($"Відкритий новий рахунок. Ідентифікатор рахунку: {Id}", Sum));
@@ -78,7 +78,7 @@ namespace BudgetLib
                 {
                     string message =
                         $"Не можливо покласти на рахунок: сума перевищує ліміт рахунку ({Limit}).\nЗменшіть суму, або змініть тип рахунку.";
-                    OnLimitOverflow(new AccountEventArgs(message, Limit));
+                    OnPut(new AccountEventArgs(message, Limit));
                     return false;
                 }
 
@@ -95,9 +95,15 @@ namespace BudgetLib
 
         public virtual bool Withdraw(decimal sum)
         {
+            if (sum == 0)
+            {
+                OnWithdrawed(new AccountEventArgs("Неможливо зняти 0 грн.", 0));
+                throw new ArgumentException("Parametr 'sum' must be more than 0.");
+            }
+            
             if (sum > Sum)
             {
-                OnWithdrawed(new AccountEventArgs("Недостатньо коштів на рахунку. Поточний баланс: {Sum} грн.", 0));
+                OnWithdrawed(new AccountEventArgs($"Недостатньо коштів на рахунку. Поточний баланс: {Sum} грн.", 0));
                 throw new ArgumentException("not enough money in this account");
             }
 
@@ -108,7 +114,7 @@ namespace BudgetLib
 
         public virtual bool Transfer(Account account, decimal sum)
         {
-            if (Sum > sum)
+            if (Sum >= sum)
             {
                 if (account.Sum + sum < account.Limit)
                 {

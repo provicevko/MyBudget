@@ -16,7 +16,7 @@ namespace BudgetLib
             bool process = account.Put(sum);
             if (!process)
             {
-                throw new Exception("money wasn't withdrawed. Process error!");
+                throw new Exception("Money wasn't withdrawed. Process error!");
             }
             ToHistory(account, Account.TypeHistoryEvent.GetMoney, $"<Отримано {DateTime.Now}>", sum);
         }
@@ -33,7 +33,7 @@ namespace BudgetLib
             bool process = account.Withdraw(sum);
             if (!process)
             {
-                throw new Exception("money wasn't withdrawed. Process error!");
+                throw new Exception("Money wasn't withdrawed. Process error!");
             }
             ToHistory(account, Account.TypeHistoryEvent.GivenMoney, $"<Знято {DateTime.Now}>", sum);
         }
@@ -54,9 +54,9 @@ namespace BudgetLib
                 throw new NullReferenceException("Not find account with such id");
             }
             bool process = account1.Transfer(account2,sum);
-            if (process)
+            if (!process)
             {
-                throw new Exception("money wasn't withdrawed. Process error!");
+                throw new Exception("Money wasn't withdrawed. Process error!");
             }
             ToHistory(account1, Account.TypeHistoryEvent.GivenMoney,
                 $"<Переведено на рахунок (id {id2}) {DateTime.Now}>", sum);

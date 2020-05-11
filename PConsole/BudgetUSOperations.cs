@@ -25,8 +25,8 @@ namespace PConsole
                     acType = AccountType.Premium;
                     break;
                 default:
-                    acType = AccountType.Small;
-                    break;
+                    Console.WriteLine("Невірно вказаний тип рахунку. Будь-ласка перевірте коректність вводу.");
+                    return;
             }
             Console.WriteLine("Введіть початкову суму на рахунку:");
             decimal sum = Convert.ToDecimal(Console.ReadLine());

@@ -7,6 +7,7 @@ namespace BudgetLib
     {
         public event BudgetStateHandler FindAccountEvent;
         public event BudgetStateHandler AccountInfo;
+        public event BudgetStateHandler ErrorAlert;
         private List<T> _accounts = new List<T>();
         public string Name { get; private set; }
         public Budget(string name)
@@ -24,9 +25,15 @@ namespace BudgetLib
 
         private void OnFindAccount(BudgetEventArgs e) => CallEvent(e, FindAccountEvent);
         private void OnAccountInfo(BudgetEventArgs e) => CallEvent(e, AccountInfo);
+        private void OnErrorAlert(BudgetEventArgs e) => CallEvent(e, ErrorAlert);
         public void OpenAccount(AccountType type, decimal sum, AccountStateHandler openHandler, AccountStateHandler closeHandler, AccountStateHandler putHandler,
             AccountStateHandler withdrawHandler, AccountStateHandler transferHandler, AccountStateHandler limitOverflowHandler)
         {
+            if (sum < 0)
+            {
+                OnErrorAlert(new BudgetEventArgs("Сума повина бути більше 0."));
+                throw new ArgumentException("Sum must be >= 0");
+            }
             T newAccount = default(T);
 
             switch (type)
@@ -34,6 +41,7 @@ namespace BudgetLib
                 case AccountType.Small:
                     if (sum > 1000)
                     {
+                        OnErrorAlert(new BudgetEventArgs("Для рахунку типу 'SMALL' сума повинна бути менша або рівна 1000 грн."));
                         throw new ArgumentException("Sum on account type 'SMALL' must be less than 1000");
                     }
                     newAccount = new SmallAccount(sum) as T;
@@ -41,6 +49,7 @@ namespace BudgetLib
                 case AccountType.Middle:
                     if (sum > 10000)
                     {
+                        OnErrorAlert(new BudgetEventArgs("Для рахунку типу 'MIDDLE' сума повинна бути менша або рівна 20000 грн."));
                         throw new ArgumentException("Sum on account type 'MIDDLE' must be less than 20000");
                     }
                     newAccount = new MiddleAccount(sum) as T;
@@ -48,6 +57,7 @@ namespace BudgetLib
                 case AccountType.Premium:
                     if (sum > 1000000)
                     {
+                        OnErrorAlert(new BudgetEventArgs("Для рахунку типу 'PREMIUM' сума повинна бути менша або рівна 1000000 грн."));
                         throw new ArgumentException("Sum on account type 'PREMIUM' must be less than 1000000");
                     }
                     newAccount = new PremiumAccount(sum) as T;
@@ -66,8 +76,7 @@ namespace BudgetLib
             newAccount.PutEvent += putHandler;
             newAccount.WithdrawEvent += withdrawHandler;
             newAccount.TransferEvent += transferHandler;
-            newAccount.LimitOverflowEvent += limitOverflowHandler;
-            
+
             newAccount.Opened();
             newAccount.OpenEvent -= openHandler;
         }
@@ -77,7 +86,7 @@ namespace BudgetLib
             T account = FindAccount(id);
             if (account == null)
             {
-                OnFindAccount(new BudgetEventArgs("Неможливо виконати операцію. Рахунок не вибраний"));
+                OnFindAccount(new BudgetEventArgs("Неможливо виконати операцію. Рахунок не вибраний."));
                 throw new NullReferenceException("Not find account");
             }
             account.Closed();
@@ -143,7 +152,7 @@ namespace BudgetLib
                 OnFindAccount(new BudgetEventArgs("Неможливо знайти рахунок. Такого рахунка не існує."));
                 throw new NullReferenceException("Not find account with such id");
             }
-            BudgetEventArgs info = new BudgetEventArgs($"Інформація про рахунок з id {id}:",account.Sum){Id = id,Type = account.Type,Limit = account.Limit};
+            BudgetEventArgs info = new BudgetEventArgs($"Інформація про рахунок з id {id}:",account.Sum){Id = id,Type = account.Type,Limit = account.Limit,RegData = account.RegData};
             OnAccountInfo(info);
         }
 

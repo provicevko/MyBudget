@@ -5,13 +5,25 @@ namespace PConsole
 {
     public static class ErrorHandler
     {
-        public static void Logs(string message)
+        public static void Logs(Exception e)
         {
-            string docPath = "logs/";
-            
-            using (StreamWriter outputFile = new StreamWriter("Log.txt", true))
+            try
             {
-                outputFile.WriteLine(message);
+                using (StreamWriter outputFile = new StreamWriter("Log.txt", true))
+                {
+                    outputFile.WriteLine("<------------------------------------------------->");
+                    outputFile.WriteLine($"Message: {e.Message}");
+                    outputFile.WriteLine($"Source: {e.Source}");
+                    outputFile.WriteLine($"StackTrace: {e.StackTrace}");
+                    outputFile.WriteLine($"TargetSite: {e.TargetSite}");
+                    outputFile.WriteLine($"InnerException: {e.InnerException}");
+                    outputFile.WriteLine($"Data: {DateTime.Now}");
+                    outputFile.WriteLine("<------------------------------------------------->");
+                }
+            }
+            catch (Exception)
+            {
+                throw new FileLoadException("Logging info error");
             }
         }
     }
