@@ -31,7 +31,7 @@ namespace BudgetLib
         {
             if (sum < 0)
             {
-                OnOpenAccount(new BudgetEventArgs("Сума повина бути більше 0."));
+                OnOpenAccount(new BudgetEventArgs("Сума повина бути більше або рівна 0."));
                 throw new ArgumentException("In order to open account sum must be >= 0");
             }
             T newAccount = default(T);
@@ -79,7 +79,7 @@ namespace BudgetLib
 
             newAccount.Opened();
             newAccount.OpenEvent -= openHandler;
-            ToHistory(newAccount, Account.TypeHistoryEvent.GivenMoney,
+            ToHistory(newAccount, Account.TypeHistoryEvent.GetMoney,
                 $"<Отримано (при відкритті) {DateTime.Now}>", sum);
         }
         

@@ -112,6 +112,12 @@ namespace BudgetLib
 
         public virtual void Transfer(Account account, decimal sum)
         {
+            if (sum <= 0)
+            {
+                OnWithdrawed(new AccountEventArgs("Неможливо перевести менше 1 грн."));
+                throw new ArgumentException("Parametr 'sum' must be more than 0");
+            }
+            
             if (Sum >= sum)
             {
                 if (account.Sum + sum < account.Limit)
