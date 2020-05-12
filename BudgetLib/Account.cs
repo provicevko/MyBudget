@@ -65,7 +65,7 @@ namespace BudgetLib
         protected virtual void OnTransfer(AccountEventArgs e) => CallEvent(e, TransferEvent);
 
         protected internal virtual void Opened() =>
-            OnOpened(new AccountEventArgs($"Відкритий новий рахунок. Ідентифікатор рахунку: {Id}"));
+            OnOpened(new AccountEventArgs($"Відкрито новий рахунок типу {Type}. Ідентифікатор рахунку: {Id}."));
 
         protected internal virtual void Closed() =>
             OnClosed(new AccountEventArgs($"Рахунок закритий типу {Type}. Ідентифікатор рахунку: {Id}"));
