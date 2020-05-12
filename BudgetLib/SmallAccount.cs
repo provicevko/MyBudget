@@ -9,7 +9,8 @@
 
         protected internal override void Opened()
         {
-            base.OnOpened(new AccountEventArgs($"Відкрито новий рахунок типу {Type}. Ідентифікатор рахунку: {Id}",Sum));
+            base.OnOpened(new AccountEventArgs($"Відкрито новий рахунок типу {Type}. Ідентифікатор рахунку: {Id}."));
         }
+        
     }
 }

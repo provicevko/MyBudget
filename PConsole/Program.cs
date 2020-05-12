@@ -12,7 +12,7 @@ namespace PConsole
             Budget<Account> budget = new Budget<Account>("Provice budget");
             budget.FindAccountEvent += BudgetHandler.FindAccountHandler;
             budget.AccountInfo += BudgetHandler.AccountInfoHandler;
-            budget.ErrorAlert += BudgetHandler.ErrorHandler;
+            budget.OpenAccountEvent += BudgetHandler.OpenAccountHandler;
            
             string description = "Команди:\n<> 'new' - відкрити новий рахунок.\n<> 'put' - покласти на рахунок.\n<> 'withdraw' - вивести з рахунку.\n" +
                                  "<> 'transfer' - перевести на інший рахунок.\n<> 'search' - пошук рахунку.\n<> 'mylist' - список моїх рахунків\n" +

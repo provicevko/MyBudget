@@ -12,7 +12,7 @@ namespace BudgetLib
         protected internal event AccountStateHandler WithdrawEvent;
         protected internal event AccountStateHandler TransferEvent;
         public decimal Sum { get; private set; }
-        public decimal Limit { get; protected set; }
+        public decimal Limit { get; protected internal set; }
         public int Id { get; }
         public string Type { get; protected internal set; }
         public DateTime RegData { get;}
@@ -65,12 +65,12 @@ namespace BudgetLib
         protected virtual void OnTransfer(AccountEventArgs e) => CallEvent(e, TransferEvent);
 
         protected internal virtual void Opened() =>
-            OnOpened(new AccountEventArgs($"Відкритий новий рахунок. Ідентифікатор рахунку: {Id}", Sum));
+            OnOpened(new AccountEventArgs($"Відкритий новий рахунок. Ідентифікатор рахунку: {Id}"));
 
         protected internal virtual void Closed() =>
-            OnClosed(new AccountEventArgs($"Рахунок закритий. Ідентифікатор рахунку: {Id}", Sum));
+            OnClosed(new AccountEventArgs($"Рахунок закритий типу {Type}. Ідентифікатор рахунку: {Id}"));
 
-        public virtual bool Put(decimal sum)
+        public virtual void Put(decimal sum)
         {
             if (sum > 0)
             {
@@ -78,41 +78,39 @@ namespace BudgetLib
                 {
                     string message =
                         $"Не можливо покласти на рахунок: сума перевищує ліміт рахунку ({Limit}).\nЗменшіть суму, або змініть тип рахунку.";
-                    OnPut(new AccountEventArgs(message, Limit));
-                    return false;
+                    OnPut(new AccountEventArgs(message));
+                    throw new ArgumentException("Result sum more then limit of account");
                 }
 
                 Sum += sum;
-                OnPut(new AccountEventArgs($"Рахунок успішно поповнений на {sum} грн.", sum));
-                return true;
+                OnPut(new AccountEventArgs($"Рахунок успішно поповнений на {sum} грн."));
             }
             else
             {
-                OnPut(new AccountEventArgs($"Неможливо поповнити на {sum} грн.", sum));
-                return false;
+                OnPut(new AccountEventArgs($"Неможливо поповнити на {sum} грн."));
+                throw new ArgumentException("Unreal to replenish account. Sum on this account <= 0");
             }
         }
 
-        public virtual bool Withdraw(decimal sum)
+        public virtual void Withdraw(decimal sum)
         {
-            if (sum == 0)
+            if (sum <= 0)
             {
-                OnWithdrawed(new AccountEventArgs("Неможливо зняти 0 грн.", 0));
-                throw new ArgumentException("Parametr 'sum' must be more than 0.");
+                OnWithdrawed(new AccountEventArgs("Неможливо зняти менше 1 грн."));
+                throw new ArgumentException("Parametr 'sum' must be more than 0");
             }
             
             if (sum > Sum)
             {
-                OnWithdrawed(new AccountEventArgs($"Недостатньо коштів на рахунку. Поточний баланс: {Sum} грн.", 0));
-                throw new ArgumentException("not enough money in this account");
+                OnWithdrawed(new AccountEventArgs($"Недостатньо коштів на рахунку. Поточний баланс: {Sum} грн."));
+                throw new ArgumentException("Not enough money in this account");
             }
 
             Sum -= sum;
-            OnWithdrawed(new AccountEventArgs($"З рахунку знято {sum} грн.", sum));
-            return true;
+            OnWithdrawed(new AccountEventArgs($"З рахунку знято {sum} грн."));
         }
 
-        public virtual bool Transfer(Account account, decimal sum)
+        public virtual void Transfer(Account account, decimal sum)
         {
             if (Sum >= sum)
             {
@@ -120,19 +118,18 @@ namespace BudgetLib
                 {
                     Sum -= sum;
                     account.Sum += sum;
-                    OnTransfer(new AccountEventArgs($"Переведено на рахунок з id {account.Id} - {sum} грн.", sum));
-                    return true;
+                    OnTransfer(new AccountEventArgs($"Переведено на рахунок з id {account.Id} - {sum} грн."));
                 }
                 else
                 {
-                    OnTransfer(new AccountEventArgs($"Неможливо перевести на рахунок з id {account.Id}. Сумма перевищує ліміт рахунку", 0));
-                    return false;
+                    OnTransfer(new AccountEventArgs($"Неможливо перевести на рахунок з id {account.Id}. Сумма перевищує ліміт рахунку"));
+                    throw new ArgumentException("Sum more than limit of account");
                 }
             }
             else
             {
-                OnTransfer(new AccountEventArgs("Недостатньо коштів на даному рахунку для переводу.", 0));
-                return false;
+                OnTransfer(new AccountEventArgs("Недостатньо коштів на даному рахунку для переводу."));
+                throw new ArgumentException($"Not enough money for transfer operation. Sum: {sum}");
             }
         }
     }

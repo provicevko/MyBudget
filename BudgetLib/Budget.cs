@@ -7,9 +7,9 @@ namespace BudgetLib
     {
         public event BudgetStateHandler FindAccountEvent;
         public event BudgetStateHandler AccountInfo;
-        public event BudgetStateHandler ErrorAlert;
+        public event BudgetStateHandler OpenAccountEvent;
         private List<T> _accounts = new List<T>();
-        public string Name { get; private set; }
+        public string Name { get;}
         public Budget(string name)
         {
             Name = name;
@@ -25,14 +25,14 @@ namespace BudgetLib
 
         private void OnFindAccount(BudgetEventArgs e) => CallEvent(e, FindAccountEvent);
         private void OnAccountInfo(BudgetEventArgs e) => CallEvent(e, AccountInfo);
-        private void OnErrorAlert(BudgetEventArgs e) => CallEvent(e, ErrorAlert);
+        private void OnOpenAccount(BudgetEventArgs e) => CallEvent(e, OpenAccountEvent);
         public void OpenAccount(AccountType type, decimal sum, AccountStateHandler openHandler, AccountStateHandler closeHandler, AccountStateHandler putHandler,
             AccountStateHandler withdrawHandler, AccountStateHandler transferHandler, AccountStateHandler limitOverflowHandler)
         {
             if (sum < 0)
             {
-                OnErrorAlert(new BudgetEventArgs("Сума повина бути більше 0."));
-                throw new ArgumentException("Sum must be >= 0");
+                OnOpenAccount(new BudgetEventArgs("Сума повина бути більше 0."));
+                throw new ArgumentException("In order to open account sum must be >= 0");
             }
             T newAccount = default(T);
 
@@ -41,7 +41,7 @@ namespace BudgetLib
                 case AccountType.Small:
                     if (sum > 1000)
                     {
-                        OnErrorAlert(new BudgetEventArgs("Для рахунку типу 'SMALL' сума повинна бути менша або рівна 1000 грн."));
+                        OnOpenAccount(new BudgetEventArgs("Для рахунку типу 'SMALL' сума повинна бути менша або рівна 1000 грн."));
                         throw new ArgumentException("Sum on account type 'SMALL' must be less than 1000");
                     }
                     newAccount = new SmallAccount(sum) as T;
@@ -49,7 +49,7 @@ namespace BudgetLib
                 case AccountType.Middle:
                     if (sum > 10000)
                     {
-                        OnErrorAlert(new BudgetEventArgs("Для рахунку типу 'MIDDLE' сума повинна бути менша або рівна 20000 грн."));
+                        OnOpenAccount(new BudgetEventArgs("Для рахунку типу 'MIDDLE' сума повинна бути менша або рівна 20000 грн."));
                         throw new ArgumentException("Sum on account type 'MIDDLE' must be less than 20000");
                     }
                     newAccount = new MiddleAccount(sum) as T;
@@ -57,7 +57,7 @@ namespace BudgetLib
                 case AccountType.Premium:
                     if (sum > 1000000)
                     {
-                        OnErrorAlert(new BudgetEventArgs("Для рахунку типу 'PREMIUM' сума повинна бути менша або рівна 1000000 грн."));
+                        OnOpenAccount(new BudgetEventArgs("Для рахунку типу 'PREMIUM' сума повинна бути менша або рівна 1000000 грн."));
                         throw new ArgumentException("Sum on account type 'PREMIUM' must be less than 1000000");
                     }
                     newAccount = new PremiumAccount(sum) as T;
@@ -66,7 +66,7 @@ namespace BudgetLib
 
             if (newAccount == null)
             {
-                throw new NullReferenceException("Unreal to create an account of choosen type.");
+                throw new NullReferenceException("Unreal to create an account of chosen type. Account is null object");
             }
             
             _accounts.Add(newAccount);
@@ -79,6 +79,8 @@ namespace BudgetLib
 
             newAccount.Opened();
             newAccount.OpenEvent -= openHandler;
+            ToHistory(newAccount, Account.TypeHistoryEvent.GivenMoney,
+                $"<Отримано (при відкритті) {DateTime.Now}>", sum);
         }
         
         public void CloseAccount(int id)
@@ -89,11 +91,7 @@ namespace BudgetLib
                 throw new NullReferenceException($"Unreal find account with id {id}");
             }
             account.Closed();
-            bool flag = _accounts.Remove(account);
-            if (!flag)
-            {
-                throw new ArgumentOutOfRangeException($"Account (id {id})wasn't remove from budget");
-            }
+            _accounts.Remove(account);
         }
 
         public T FindAccount(int id)

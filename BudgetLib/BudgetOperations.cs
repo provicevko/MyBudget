@@ -12,11 +12,7 @@ namespace BudgetLib
             {
                 throw new NullReferenceException($"Unreal find account with id {id}");
             }
-            bool process = account.Put(sum);
-            if (!process)
-            {
-                throw new Exception("Money wasn't withdrawed. Process error!");
-            }
+            account.Put(sum);
             ToHistory(account, Account.TypeHistoryEvent.GetMoney, $"<Отримано {DateTime.Now}>", sum);
         }
 
@@ -27,12 +23,7 @@ namespace BudgetLib
             {
                 throw new NullReferenceException($"Unreal find account with id {id}");
             }
-
-            bool process = account.Withdraw(sum);
-            if (!process)
-            {
-                throw new Exception("Money wasn't withdrawed. Process error!");
-            }
+            account.Withdraw(sum);
             ToHistory(account, Account.TypeHistoryEvent.GivenMoney, $"<Знято {DateTime.Now}>", sum);
         }
 
@@ -49,11 +40,7 @@ namespace BudgetLib
             {
                 throw new NullReferenceException($"Unreal find account with id {id2}");
             }
-            bool process = account1.Transfer(account2,sum);
-            if (!process)
-            {
-                throw new Exception("Money wasn't withdrawed. Process error!");
-            }
+            account1.Transfer(account2,sum);
             ToHistory(account1, Account.TypeHistoryEvent.GivenMoney,
                 $"<Переведено на рахунок (id {id2}) {DateTime.Now}>", sum);
             ToHistory(account2, Account.TypeHistoryEvent.GetMoney,
