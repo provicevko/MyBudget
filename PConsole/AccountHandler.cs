@@ -10,6 +10,5 @@ namespace PConsole
         internal static void PuHandler(object sender, AccountEventArgs e) => Console.WriteLine(e.Message);
         internal static void WithdrawHandler(object sender, AccountEventArgs e) => Console.WriteLine(e.Message);
         internal static void TransferHandler(object sender, AccountEventArgs e) => Console.WriteLine(e.Message);
-        internal static void LimitHandler(object sender, AccountEventArgs e) => Console.WriteLine(e.Message);
     }
 }

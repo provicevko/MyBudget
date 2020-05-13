@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using BudgetLib;
+using MoneySpendingItems;
 
 namespace PConsole
 {
@@ -8,7 +9,12 @@ namespace PConsole
     {
         static void Main(string[] args)
         {
-            Console.OutputEncoding = System.Text.Encoding.Default;
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+            PutItems putItems = new PutItems();
+            SpendItems spendItems = new SpendItems();
+            MoneyItems.AddItems(putItems);
+            MoneyItems.SpendItems(spendItems);
+            
             Budget<Account> budget = new Budget<Account>("Provice budget");
             budget.FindAccountEvent += BudgetHandler.FindAccountHandler;
             budget.AccountInfo += BudgetHandler.AccountInfoHandler;
@@ -32,10 +38,10 @@ namespace PConsole
                             BudgetUSOperations.OpenAccount(budget);
                             break;
                         case "put":
-                            BudgetUSOperations.Put(budget);
+                            BudgetUSOperations.Put(budget, putItems);
                             break;
                         case "withdraw":
-                            BudgetUSOperations.Withdraw(budget);
+                            BudgetUSOperations.Withdraw(budget, spendItems);
                             break;
                         case "transfer":
                             BudgetUSOperations.Transfer(budget);
@@ -65,6 +71,10 @@ namespace PConsole
                             Console.WriteLine("Нерозпізнана команда.");
                             break;
                     }
+                }
+                catch (ArgumentNullException e)
+                {
+                    ErrorHandler.Logs(e);
                 }
                 catch (ArgumentOutOfRangeException e)
                 {

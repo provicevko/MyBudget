@@ -39,6 +39,7 @@ namespace BudgetLib
             public string Message;
             public TypeHistoryEvent Type;
             public decimal Sum;
+            public string Item;
         }
         protected internal HistoryAccount _historyAccount;
 
@@ -124,7 +125,7 @@ namespace BudgetLib
                 {
                     Sum -= sum;
                     account.Sum += sum;
-                    OnTransfer(new AccountEventArgs($"Переведено на рахунок з id {account.Id} - {sum} грн."));
+                    OnTransfer(new AccountEventArgs($"Переведено на інший рахунок (id<{Id}> -> id<{account.Id}>) {sum} грн."));
                 }
                 else
                 {

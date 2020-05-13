@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using BudgetLib;
+using MoneySpendingItems;
 
 namespace PConsole
 {
@@ -31,7 +32,7 @@ namespace PConsole
             Console.WriteLine("Введіть початкову суму на рахунку:");
             decimal sum = Convert.ToDecimal(Console.ReadLine());
             budget.OpenAccount(acType,sum,AccountHandler.OpenHandler,AccountHandler.CloseHandler, AccountHandler.PuHandler,
-                AccountHandler.WithdrawHandler,AccountHandler.TransferHandler,AccountHandler.LimitHandler);
+                AccountHandler.WithdrawHandler,AccountHandler.TransferHandler);
         }
         internal static void AccountIdsList(Budget<Account> budget)
         {
@@ -48,24 +49,75 @@ namespace PConsole
             }
         }
         
-        internal static void Put(Budget<Account> budget)
+        internal static void Put(Budget<Account> budget,PutItems putItems)
         {
             Console.WriteLine("Виберіть рахунок (id):");
             AccountIdsList(budget);
             int id = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("Виберіть дію для поповнення (введіть цифру):");
+            for (int i = 0; i < putItems.GetItems.Count; i++)
+            {
+                Console.WriteLine($"{i+1}:\t{putItems.GetItems[i].Name}");
+            }
+            int indexItem = Convert.ToInt32(Console.ReadLine());
+            if (indexItem < 1 || indexItem > putItems.GetItems.Count)
+            {
+                throw new ArgumentOutOfRangeException("indexItem");
+            }
+
+            string item;
+            if (indexItem == putItems.GetItems.Count) // other
+            {
+                Console.WriteLine("Введіть коментар поповнення (не більше 18 символів):");
+                item = Convert.ToString(Console.ReadLine()).ToLower();
+                if (item.Length > 18 || item.Replace(" ","").Length == 0)
+                {
+                    Console.WriteLine("Некоректно введений коментар. Повторіть процедуру ще раз.");
+                    throw new ArgumentException("Not correctly input comment to put operation");
+                }
+            }
+            else
+            {
+                item = putItems.GetItems[indexItem - 1].Name;
+            }
             Console.WriteLine("Вкажіть суму поповнення:");
             decimal sum = Convert.ToDecimal(Console.ReadLine());
-            budget.Put(id,sum);
+            budget.Put(id,sum,item);
         }
 
-        internal static void Withdraw(Budget<Account> budget)
+        internal static void Withdraw(Budget<Account> budget,SpendItems spendItems)
         {
             Console.WriteLine("Виберіть рахунок (id):");
             AccountIdsList(budget);
             int id = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("Виберіть дію для зняття (введіть цифру):");
+            for (int i = 0; i < spendItems.GetItems.Count; i++)
+            {
+                Console.WriteLine($"{i+1}:\t{spendItems.GetItems[i].Name}");
+            }
+            int indexItem = Convert.ToInt32(Console.ReadLine());
+            if (indexItem < 1 || indexItem > spendItems.GetItems.Count)
+            {
+                throw new ArgumentOutOfRangeException("indexItem");
+            }
+            string item;
+            if (indexItem == spendItems.GetItems.Count) // other
+            {
+                Console.WriteLine("Введіть коментар поповнення (не більше 18 символів):");
+                item = Convert.ToString(Console.ReadLine()).ToLower();
+                if (item.Length > 18 || item.Replace(" ","").Length == 0)
+                {
+                    Console.WriteLine("Некоректно введений коментар. Повторіть процедуру ще раз.");
+                    throw new ArgumentException("Not correctly input comment to put operation");
+                }
+            }
+            else
+            {
+                item = spendItems.GetItems[indexItem - 1].Name;
+            }
             Console.WriteLine("Вкажіть суму зняття:");
             decimal sum = Convert.ToDecimal(Console.ReadLine());
-            budget.Withdraw(id,sum);
+            budget.Withdraw(id,sum,item);
         }
 
         internal static void Transfer(Budget<Account> budget)
@@ -103,29 +155,54 @@ namespace PConsole
             Console.WriteLine("Виберіть тип пошуку:\n\t1. 'get' - отримано.\n\t2. 'give' - знято.");
             string command = Convert.ToString(Console.ReadLine());
             Account.TypeHistoryEvent type;
-            if (command == "get")
+            string specificator;
+            switch (command)
             {
-                type = Account.TypeHistoryEvent.GetMoney;
+                case "get":
+                    type = Account.TypeHistoryEvent.GetMoney;
+                    Console.WriteLine("Виберіть тип запиту:\n\t1. 'all' - показати всі.\n\t2. 'search' - пошук по ключовому слову");
+                    specificator = Convert.ToString(Console.ReadLine());
+                    break;
+                case "give":
+                    type = Account.TypeHistoryEvent.GivenMoney;
+                    Console.WriteLine("Виберіть тип запиту:\n\t1. 'all' - показати всі.\n\t2. 'search' - пошук по ключовому слову");
+                    specificator = Convert.ToString(Console.ReadLine());
+                    break;
+                default:
+                    Console.WriteLine("Невідома команда. Спробуйте ще раз!");
+                    return;
             }
-            else if (command == "give")
+
+            if (specificator != "all" && specificator != "search")
             {
-                type = Account.TypeHistoryEvent.GivenMoney;
-            }
-            else
-            {
-                Console.WriteLine("Невідома команда. Спробуйте ще раз!");
-                return;
+                Console.WriteLine("Некоректний тип запиту.");
+                throw new ArgumentException("Specificator can be 'all' or 'search'");
             }
             Console.WriteLine("Історія операцій:");
             Account.HistoryAccount hst = budget.HistoryInfo(id);
             decimal sum = 0;
-            foreach (var val in hst.historyList)
+            if (specificator == "search")
             {
-                if (val.Type == type)
+                Console.WriteLine("Введіть ключове слово для пошуку (зарезервовані слова: 'відкриття', 'переведення'):");
+                string sword = Convert.ToString(Console.ReadLine()).ToLower();
+                foreach (var val in hst.historyList)
                 {
-                    Console.Write(val.Message+"\t");
-                    Console.WriteLine(val.Sum+" грн.");
-                    sum += val.Sum;
+                    if (val.Type == type && val.Item == sword)
+                    {
+                        Console.WriteLine(val.Message + "\t" + val.Sum + " грн." + "\t" + $"[ {val.Item} ]");
+                        sum += val.Sum;
+                    }
+                }
+            }
+            else
+            {
+                foreach (var val in hst.historyList)
+                {
+                    if (val.Type == type)
+                    {
+                        Console.WriteLine(val.Message + "\t" + val.Sum + " грн." + "\t" + $"[ {val.Item} ]");
+                        sum += val.Sum;
+                    }
                 }
             }
             Console.WriteLine($"Всього: {sum} грн.");

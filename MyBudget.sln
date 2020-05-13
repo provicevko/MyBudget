@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PConsole", "PConsole\PConso
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetLib", "BudgetLib\BudgetLib.csproj", "{9CC2C8A5-A407-4772-B57F-1F6C665D2D81}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoneySpendingItems", "MoneySpendingItems\MoneySpendingItems.csproj", "{D4F2A1D1-B264-4D95-A688-A6CD36357924}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{9CC2C8A5-A407-4772-B57F-1F6C665D2D81}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9CC2C8A5-A407-4772-B57F-1F6C665D2D81}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9CC2C8A5-A407-4772-B57F-1F6C665D2D81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4F2A1D1-B264-4D95-A688-A6CD36357924}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4F2A1D1-B264-4D95-A688-A6CD36357924}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4F2A1D1-B264-4D95-A688-A6CD36357924}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4F2A1D1-B264-4D95-A688-A6CD36357924}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

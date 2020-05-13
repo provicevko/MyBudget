@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.VisualBasic;
 
 namespace BudgetLib
 {
-    public partial class Budget<T> where T : Account
+    public partial class Budget<T> : IBudget<T> where T : Account
     {
         public event BudgetStateHandler FindAccountEvent;
         public event BudgetStateHandler AccountInfo;
@@ -27,7 +28,7 @@ namespace BudgetLib
         private void OnAccountInfo(BudgetEventArgs e) => CallEvent(e, AccountInfo);
         private void OnOpenAccount(BudgetEventArgs e) => CallEvent(e, OpenAccountEvent);
         public void OpenAccount(AccountType type, decimal sum, AccountStateHandler openHandler, AccountStateHandler closeHandler, AccountStateHandler putHandler,
-            AccountStateHandler withdrawHandler, AccountStateHandler transferHandler, AccountStateHandler limitOverflowHandler)
+            AccountStateHandler withdrawHandler, AccountStateHandler transferHandler)
         {
             if (sum < 0)
             {
@@ -47,7 +48,7 @@ namespace BudgetLib
                     newAccount = new SmallAccount(sum) as T;
                     break;
                 case AccountType.Middle:
-                    if (sum > 10000)
+                    if (sum > 20000)
                     {
                         OnOpenAccount(new BudgetEventArgs("Для рахунку типу 'MIDDLE' сума повинна бути менша або рівна 20000 грн."));
                         throw new ArgumentException("Sum on account type 'MIDDLE' must be less than 20000");
@@ -80,7 +81,7 @@ namespace BudgetLib
             newAccount.Opened();
             newAccount.OpenEvent -= openHandler;
             ToHistory(newAccount, Account.TypeHistoryEvent.GetMoney,
-                $"<Отримано (при відкритті) {DateTime.Now}>", sum);
+                $"<Отримано (при відкритті) {DateTime.Now}>", sum,"відкриття");
         }
         
         public void CloseAccount(int id)
@@ -121,12 +122,13 @@ namespace BudgetLib
             }
         }
 
-        private void ToHistory(Account account,Account.TypeHistoryEvent type,string message,decimal sum)
+        private void ToHistory(Account account,Account.TypeHistoryEvent type,string message,decimal sum,string item)
         {
             Account.HistoryStruct historyStruct;
             historyStruct.Type = type;
             historyStruct.Message = message;
             historyStruct.Sum = sum;
+            historyStruct.Item = item;
             account._historyAccount.historyList.Add(historyStruct);
         }
 
