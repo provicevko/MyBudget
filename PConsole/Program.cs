@@ -19,10 +19,11 @@ namespace PConsole
             budget.FindAccountEvent += BudgetHandler.FindAccountHandler;
             budget.AccountInfo += BudgetHandler.AccountInfoHandler;
             budget.OpenAccountEvent += BudgetHandler.OpenAccountHandler;
+            budget.ChangeTypeEvent += BudgetHandler.ChangeTypeAccount;
            
             string description = "Команди:\n<> 'new' - відкрити новий рахунок.\n<> 'put' - покласти на рахунок.\n<> 'withdraw' - вивести з рахунку.\n" +
-                                 "<> 'transfer' - перевести на інший рахунок.\n<> 'search' - пошук рахунку.\n<> 'mylist' - список моїх рахунків\n" +
-                                 "<> 'ainfo' - інформація про рахунок.\n<> 'hinfo' - історія операцій.\n<> 'close' - закрити рахунок.\n" +
+                                 "<> 'transfer' - перевести на інший рахунок.\n<> 'search' - пошук рахунку.\n<> 'mylist' - список моїх рахунків.\n" +
+                                 "<> 'ainfo' - інформація про рахунок.\n<> 'hinfo' - історія операцій.\n<> 'tchange' - змінити тип рахунку.\n<> 'close' - закрити рахунок.\n" +
                                  "<> 'help' - список команд.\n<> 'exit' - вихід.";
             Console.WriteLine(description);
 
@@ -57,6 +58,9 @@ namespace PConsole
                             break;
                         case "hinfo":
                             BudgetUSOperations.HistoryInfo(budget);
+                            break;
+                        case "tchange":
+                            BudgetUSOperations.ChangeTypeAccount(budget);
                             break;
                         case "help":
                             Console.WriteLine(description);

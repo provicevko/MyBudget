@@ -214,5 +214,30 @@ namespace PConsole
             int id = Convert.ToInt32(Console.ReadLine());
             budget.CloseAccount(id);
         }
+
+        internal static void ChangeTypeAccount(Budget<Account> budget)
+        {
+            Console.WriteLine("Введіть номер рахунку (id):");
+            int id = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("Введіть тип рахунку:\n\t1. 'small' - SMALL тип (ліміт 1000 грн.)\n\t2. 'middle' - MIDDLE тип (ліміт 20000 грн.)\n\t3. 'premium' - PREMIUM тип (ліміт 1000000 грн.)");
+            AccountType acType;
+            string type = Convert.ToString(Console.ReadLine());
+            switch (type)
+            {
+                case "small":
+                    acType = AccountType.Small;
+                    break;
+                case "middle":
+                    acType = AccountType.Middle;
+                    break;
+                case "premium":
+                    acType = AccountType.Premium;
+                    break;
+                default:
+                    Console.WriteLine("Невірно вказаний тип рахунку. Будь-ласка перевірте коректність вводу.");
+                    return;
+            }
+            budget.ChangeTypeAccount(id,acType);
+        }
     }
 }

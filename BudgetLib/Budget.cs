@@ -9,6 +9,7 @@ namespace BudgetLib
         public event BudgetStateHandler FindAccountEvent;
         public event BudgetStateHandler AccountInfo;
         public event BudgetStateHandler OpenAccountEvent;
+        public event BudgetStateHandler ChangeTypeEvent;
         private List<T> _accounts = new List<T>();
         public string Name { get;}
         public Budget(string name)
@@ -27,6 +28,7 @@ namespace BudgetLib
         private void OnFindAccount(BudgetEventArgs e) => CallEvent(e, FindAccountEvent);
         private void OnAccountInfo(BudgetEventArgs e) => CallEvent(e, AccountInfo);
         private void OnOpenAccount(BudgetEventArgs e) => CallEvent(e, OpenAccountEvent);
+        private void OnChangeType(BudgetEventArgs e) => CallEvent(e, ChangeTypeEvent);
         public void OpenAccount(AccountType type, decimal sum, AccountStateHandler openHandler, AccountStateHandler closeHandler, AccountStateHandler putHandler,
             AccountStateHandler withdrawHandler, AccountStateHandler transferHandler)
         {
@@ -153,17 +155,19 @@ namespace BudgetLib
             OnAccountInfo(info);
         }
 
-        // public void ChangeTypeAccount(int id, AccountType type)
-        // {
-        //     T account = FindAccount(id);
-        //     if (account == null)
-        //     {
-        //         OnFindAccount(new BudgetEventArgs("Неможливо знайти рахунок. Такого рахунка не існує."));
-        //         throw new NullReferenceException("Not choosen account");
-        //     }
-        //
-        //     account.Type = $"{type}";
-        //     OnAccountInfo(new BudgetEventArgs($"Тип рахунку (id {id}) змінений на {type}"));
-        // }
+        public void ChangeTypeAccount(int id, AccountType type)
+        {
+            T account = FindAccount(id);
+            if (account == null)
+            {
+                throw new NullReferenceException("Not find account");
+            }
+        
+            account.Type = $"{type.ToString().ToUpper()}";
+            account.Limit = (decimal) type;
+            OnChangeType(new BudgetEventArgs($"Тип рахунку (id {id}) змінений на {type.ToString().ToUpper()}"));
+            ToHistory(account, Account.TypeHistoryEvent.GetMoney,
+                $"<Зміна типу рахунку {DateTime.Now}>", 0,"відкриття");
+        }
     }
 }

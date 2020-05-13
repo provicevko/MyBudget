@@ -2,8 +2,8 @@
 {
     public enum AccountType
     {
-        Small,
-        Middle,
-        Premium
+        Small = 1000,
+        Middle = 20000,
+        Premium = 1000000
     }
 }
