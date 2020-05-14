@@ -5,6 +5,7 @@
         public event BudgetStateHandler FindAccountEvent;
         public event BudgetStateHandler AccountInfo;
         public event BudgetStateHandler OpenAccountEvent;
+        public event BudgetStateHandler ChangeTypeAccountEvent;
         public string Name { get; }
 
         public void OpenAccount(AccountType type, decimal sum, AccountStateHandler openHandler,

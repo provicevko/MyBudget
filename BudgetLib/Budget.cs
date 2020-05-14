@@ -9,7 +9,7 @@ namespace BudgetLib
         public event BudgetStateHandler FindAccountEvent;
         public event BudgetStateHandler AccountInfo;
         public event BudgetStateHandler OpenAccountEvent;
-        public event BudgetStateHandler ChangeTypeEvent;
+        public event BudgetStateHandler ChangeTypeAccountEvent;
         private List<T> _accounts = new List<T>();
         public string Name { get;}
         public Budget(string name)
@@ -28,14 +28,14 @@ namespace BudgetLib
         private void OnFindAccount(BudgetEventArgs e) => CallEvent(e, FindAccountEvent);
         private void OnAccountInfo(BudgetEventArgs e) => CallEvent(e, AccountInfo);
         private void OnOpenAccount(BudgetEventArgs e) => CallEvent(e, OpenAccountEvent);
-        private void OnChangeType(BudgetEventArgs e) => CallEvent(e, ChangeTypeEvent);
+        private void OnChangeType(BudgetEventArgs e) => CallEvent(e, ChangeTypeAccountEvent);
         public void OpenAccount(AccountType type, decimal sum, AccountStateHandler openHandler, AccountStateHandler closeHandler, AccountStateHandler putHandler,
             AccountStateHandler withdrawHandler, AccountStateHandler transferHandler)
         {
             if (sum < 0)
             {
-                OnOpenAccount(new BudgetEventArgs("Сума повина бути більше або рівна 0."));
-                throw new ArgumentException("In order to open account sum must be >= 0");
+                OnOpenAccount(new BudgetEventArgs("The sum of money must be greater than or equal to 0."));
+                throw new ArgumentException("In order to open account 'sum' must be >= 0");
             }
             T newAccount = default(T);
 
@@ -44,24 +44,24 @@ namespace BudgetLib
                 case AccountType.Small:
                     if (sum > 1000)
                     {
-                        OnOpenAccount(new BudgetEventArgs("Для рахунку типу 'SMALL' сума повинна бути менша або рівна 1000 грн."));
-                        throw new ArgumentException("Sum on account type 'SMALL' must be less than 1000");
+                        OnOpenAccount(new BudgetEventArgs("For an account of type 'SMALL', the sum of money must be less than or equal to 1000 UAH."));
+                        throw new ArgumentException("Sum on account type 'SMALL' must be less than 1,000");
                     }
                     newAccount = new SmallAccount(sum) as T;
                     break;
                 case AccountType.Middle:
                     if (sum > 20000)
                     {
-                        OnOpenAccount(new BudgetEventArgs("Для рахунку типу 'MIDDLE' сума повинна бути менша або рівна 20000 грн."));
-                        throw new ArgumentException("Sum on account type 'MIDDLE' must be less than 20000");
+                        OnOpenAccount(new BudgetEventArgs("For an account of type 'MIDDLE', the sum of money must be less than or equal to 20000 UAH."));
+                        throw new ArgumentException("Sum on account type 'MIDDLE' must be less than 20,000");
                     }
                     newAccount = new MiddleAccount(sum) as T;
                     break;
                 case AccountType.Premium:
                     if (sum > 1000000)
                     {
-                        OnOpenAccount(new BudgetEventArgs("Для рахунку типу 'PREMIUM' сума повинна бути менша або рівна 1000000 грн."));
-                        throw new ArgumentException("Sum on account type 'PREMIUM' must be less than 1000000");
+                        OnOpenAccount(new BudgetEventArgs("For an account of type 'PREMIUM', the sum of money must be less than or equal to 1000000 UAH."));
+                        throw new ArgumentException("Sum on account type 'PREMIUM' must be less than 1,000,000");
                     }
                     newAccount = new PremiumAccount(sum) as T;
                     break;
@@ -83,7 +83,7 @@ namespace BudgetLib
             newAccount.Opened();
             newAccount.OpenEvent -= openHandler;
             ToHistory(newAccount, Account.TypeHistoryEvent.GetMoney,
-                $"<Отримано (при відкритті) {DateTime.Now}>", sum,"відкриття");
+                $"<Received (at the opening) {DateTime.Now}>", sum,"opening");
         }
         
         public void CloseAccount(int id)
@@ -106,7 +106,7 @@ namespace BudgetLib
                     return instance;
                 }
             }
-            OnFindAccount(new BudgetEventArgs($"Рахунок з id {id} не знайдений."));
+            OnFindAccount(new BudgetEventArgs($"Account with id {id} not found."));
             return null;
         }
 
@@ -151,7 +151,7 @@ namespace BudgetLib
             {
                 throw new NullReferenceException($"Unreal find account with id {id}");
             }
-            BudgetEventArgs info = new BudgetEventArgs($"Інформація про рахунок з id {id}:",account.Sum){Id = id,Type = account.Type,Limit = account.Limit,RegData = account.RegData};
+            BudgetEventArgs info = new BudgetEventArgs($"Information for an account with id {id}:",account.Sum){Id = id,Type = account.Type,Limit = account.Limit,RegData = account.RegData};
             OnAccountInfo(info);
         }
 
@@ -160,14 +160,14 @@ namespace BudgetLib
             T account = FindAccount(id);
             if (account == null)
             {
-                throw new NullReferenceException("Not find account");
+                throw new NullReferenceException("Not find account with id {id}");
             }
         
             account.Type = $"{type.ToString().ToUpper()}";
             account.Limit = (decimal) type;
-            OnChangeType(new BudgetEventArgs($"Тип рахунку (id {id}) змінений на {type.ToString().ToUpper()}"));
+            OnChangeType(new BudgetEventArgs($"Account type (id {id}) changed to {type.ToString (). ToUpper ()}"));
             ToHistory(account, Account.TypeHistoryEvent.GetMoney,
-                $"<Зміна типу рахунку {DateTime.Now}>", 0,"відкриття");
+                $"<Change account type {DateTime.Now}>", 0,"opening");
         }
     }
 }

@@ -66,10 +66,10 @@ namespace BudgetLib
         protected virtual void OnTransfer(AccountEventArgs e) => CallEvent(e, TransferEvent);
 
         protected internal virtual void Opened() =>
-            OnOpened(new AccountEventArgs($"Відкрито новий рахунок типу {Type}. Ідентифікатор рахунку: {Id}."));
+            OnOpened(new AccountEventArgs($"A new account of type {Type} has been opened. Account ID: {Id}."));
 
         protected internal virtual void Closed() =>
-            OnClosed(new AccountEventArgs($"Рахунок закритий типу {Type}. Ідентифікатор рахунку: {Id}"));
+            OnClosed(new AccountEventArgs($"The account of type {Type} is closed. Account ID: {Id}."));
 
         public virtual void Put(decimal sum)
         {
@@ -78,18 +78,18 @@ namespace BudgetLib
                 if (Sum + sum > Limit)
                 {
                     string message =
-                        $"Не можливо покласти на рахунок: сума перевищує ліміт рахунку ({Limit}).\nЗменшіть суму, або змініть тип рахунку.";
+                        $"It is not possible to put on the account (the sum of money exceeds the account limit ({Limit} UAH)).\nReduce the sum of money, or change the account type.";
                     OnPut(new AccountEventArgs(message));
-                    throw new ArgumentException("Result sum more then limit of account");
+                    throw new ArgumentException("Result sum of money more then limit of account");
                 }
 
                 Sum += sum;
-                OnPut(new AccountEventArgs($"Рахунок успішно поповнений на {sum} грн."));
+                OnPut(new AccountEventArgs($"The account was successfully replenished with {sum} UAH."));
             }
             else
             {
-                OnPut(new AccountEventArgs($"Неможливо поповнити на {sum} грн."));
-                throw new ArgumentException("Unreal to replenish account. Sum on this account <= 0");
+                OnPut(new AccountEventArgs($"Unable to replenish account for {sum} UAH."));
+                throw new ArgumentException("Unreal to replenish account. Sum of money on this account <= 0");
             }
         }
 
@@ -97,25 +97,25 @@ namespace BudgetLib
         {
             if (sum <= 0)
             {
-                OnWithdrawed(new AccountEventArgs("Неможливо зняти менше 1 грн."));
+                OnWithdrawed(new AccountEventArgs("It is impossible to withdraw less than 1 UAH."));
                 throw new ArgumentException("Parametr 'sum' must be more than 0");
             }
             
             if (sum > Sum)
             {
-                OnWithdrawed(new AccountEventArgs($"Недостатньо коштів на рахунку. Поточний баланс: {Sum} грн."));
+                OnWithdrawed(new AccountEventArgs($"Insufficient UAH in the account. Current balance: {Sum} UAH."));
                 throw new ArgumentException("Not enough money in this account");
             }
 
             Sum -= sum;
-            OnWithdrawed(new AccountEventArgs($"З рахунку знято {sum} грн."));
+            OnWithdrawed(new AccountEventArgs($"{sum} UAH was withdrawn from the account."));
         }
 
         public virtual void Transfer(Account account, decimal sum)
         {
             if (sum <= 0)
             {
-                OnWithdrawed(new AccountEventArgs("Неможливо перевести менше 1 грн."));
+                OnWithdrawed(new AccountEventArgs("It is impossible to transfer less than 1 UAH."));
                 throw new ArgumentException("Parametr 'sum' must be more than 0");
             }
             
@@ -125,17 +125,17 @@ namespace BudgetLib
                 {
                     Sum -= sum;
                     account.Sum += sum;
-                    OnTransfer(new AccountEventArgs($"Переведено на інший рахунок (id<{Id}> -> id<{account.Id}>) {sum} грн."));
+                    OnTransfer(new AccountEventArgs($"Transferred to another account (id <{Id}> -> id <{account.Id}>) with {sum} UAH."));
                 }
                 else
                 {
-                    OnTransfer(new AccountEventArgs($"Неможливо перевести на рахунок з id {account.Id}. Сумма перевищує ліміт рахунку"));
+                    OnTransfer(new AccountEventArgs($"Unable to transfer to account with id {account.Id}. The sum of money exceeds the account limit."));
                     throw new ArgumentException("Sum more than limit of account");
                 }
             }
             else
             {
-                OnTransfer(new AccountEventArgs("Недостатньо коштів на даному рахунку для переводу."));
+                OnTransfer(new AccountEventArgs("There are not enough money in this account to transfer."));
                 throw new ArgumentException($"Not enough money for transfer operation. Sum: {sum}");
             }
         }

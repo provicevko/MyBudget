@@ -19,12 +19,12 @@ namespace PConsole
             budget.FindAccountEvent += BudgetHandler.FindAccountHandler;
             budget.AccountInfo += BudgetHandler.AccountInfoHandler;
             budget.OpenAccountEvent += BudgetHandler.OpenAccountHandler;
-            budget.ChangeTypeEvent += BudgetHandler.ChangeTypeAccount;
+            budget.ChangeTypeAccountEvent += BudgetHandler.ChangeTypeAccountAccount;
            
-            string description = "Команди:\n<> 'new' - відкрити новий рахунок.\n<> 'put' - покласти на рахунок.\n<> 'withdraw' - вивести з рахунку.\n" +
-                                 "<> 'transfer' - перевести на інший рахунок.\n<> 'search' - пошук рахунку.\n<> 'mylist' - список моїх рахунків.\n" +
-                                 "<> 'ainfo' - інформація про рахунок.\n<> 'hinfo' - історія операцій.\n<> 'tchange' - змінити тип рахунку.\n<> 'close' - закрити рахунок.\n" +
-                                 "<> 'help' - список команд.\n<> 'exit' - вихід.";
+            string description = "Commands:\n<> 'new' - open a new account.\n<> 'put' - put on the account.\n<> 'withdraw' - withdraw from the account.\n"+
+                                 "<> 'transfer' - transfer to another account.\n<> 'search' - account search.\n<> 'mylist' - list of my accounts.\n"+
+            "<> 'ainfo' - account information.\n<> 'hinfo' - transaction history.\n<> 'tchange' - change account type.\n<> 'close' - close account.\n" +
+                "<> 'help' - list of commands.\n<> 'exit' - exit.";
             Console.WriteLine(description);
 
             bool alive = true;
@@ -72,7 +72,7 @@ namespace PConsole
                             Environment.Exit(0);
                             break;
                         default:
-                            Console.WriteLine("Нерозпізнана команда.");
+                            Console.WriteLine("Unrecognized command.");
                             break;
                     }
                 }
@@ -82,7 +82,7 @@ namespace PConsole
                 }
                 catch (ArgumentOutOfRangeException e)
                 {
-                    Console.WriteLine("Невідома помилка під час виконання. Повторіть процедуру ще раз!");
+                    Console.WriteLine("Unknown runtime error. Repeat the procedure again!");
                     ErrorHandler.Logs(e);
                 }
                 catch (ArgumentException e)
@@ -91,17 +91,17 @@ namespace PConsole
                 }
                 catch (NullReferenceException e)
                 {
-                    Console.WriteLine("Виконання процедури було перервано. Перевірте коректність вводу.");
+                    Console.WriteLine("The procedure was aborted. Check that the input is correct.");
                     ErrorHandler.Logs(e);
                 }
                 catch (FileLoadException)
                 {
-                    Console.WriteLine("Програма не працює коректно. Спробуйте перезапустити!");
+                    Console.WriteLine("The program does not work correctly. Try restarting!");
                     break;
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("Виконання процедури було перервано. Перевірте коректність вводу.");
+                    Console.WriteLine("The procedure was aborted. Check that the input is correct.");
                     ErrorHandler.Logs(e);
                 }
             }

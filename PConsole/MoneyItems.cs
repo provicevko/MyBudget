@@ -7,17 +7,17 @@ namespace PConsole
     {
         internal static void AddItems(PutItems putItems)
         {
-            putItems.AddItem("фріланс");
-            putItems.AddItem("робота");
-            putItems.AddItem("інше");
+            putItems.AddItem("Freelance");
+            putItems.AddItem("Job");
+            putItems.AddItem("Other");
         }
         
         internal static void SpendItems(SpendItems spendItems)
         {
-            spendItems.SpendItem("їжа");
-            spendItems.SpendItem("техніка");
-            spendItems.SpendItem("розваги");
-            spendItems.SpendItem("інше");
+            spendItems.SpendItem("Food");
+            spendItems.SpendItem("Technics");
+            spendItems.SpendItem("Entertainment");
+            spendItems.SpendItem("Other");
         }
     }
 }

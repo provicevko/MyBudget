@@ -13,6 +13,6 @@ namespace PConsole
         }
 
         internal static void OpenAccountHandler(object sender, BudgetEventArgs e) => Console.WriteLine(e.Message);
-        internal static void ChangeTypeAccount(object sender, BudgetEventArgs e) => Console.WriteLine(e.Message);
+        internal static void ChangeTypeAccountAccount(object sender, BudgetEventArgs e) => Console.WriteLine(e.Message);
     }
 }

@@ -17,7 +17,7 @@ namespace BudgetLib
                 throw new NullReferenceException($"Unreal find account with id {id}");
             }
             account.Put(sum);
-            ToHistory(account, Account.TypeHistoryEvent.GetMoney, $"<Отримано {DateTime.Now}>", sum,item);
+            ToHistory(account, Account.TypeHistoryEvent.GetMoney, $"<Received {DateTime.Now}>", sum,item);
         }
 
         public void Withdraw(int id,decimal sum,string item)
@@ -32,7 +32,7 @@ namespace BudgetLib
                 throw new NullReferenceException($"Unreal find account with id {id}");
             }
             account.Withdraw(sum);
-            ToHistory(account, Account.TypeHistoryEvent.GivenMoney, $"<Знято {DateTime.Now}>", sum,item);
+            ToHistory(account, Account.TypeHistoryEvent.GivenMoney, $"<Withdrawn {DateTime.Now}>", sum,item);
         }
 
         public void Transfer(int id1,int id2, decimal sum)
@@ -50,9 +50,9 @@ namespace BudgetLib
             }
             account1.Transfer(account2,sum);
             ToHistory(account1, Account.TypeHistoryEvent.GivenMoney,
-                $"<Переведено на рахунок (id {id2}) {DateTime.Now}>", sum,"переведення");
+                $"<Transferred to account (id {id2}) {DateTime.Now}>", sum,"transfer");
             ToHistory(account2, Account.TypeHistoryEvent.GetMoney,
-                $"<Отримано переведенням з рахунку (id {id1}) {DateTime.Now}>", sum,"переведення");
+                $"<Received by transfer from account (id {id1}) {DateTime.Now}>", sum,"transfer");
         }
     }
 }
