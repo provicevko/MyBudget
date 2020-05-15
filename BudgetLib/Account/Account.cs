@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace BudgetLib
@@ -14,7 +13,7 @@ namespace BudgetLib
         public decimal Sum { get; private set; }
         public decimal Limit { get; protected internal set; }
         public int Id { get; }
-        public string Type { get; protected internal set; }
+        public AccountType Type { get; protected internal set; }
         public DateTime RegData { get;}
 
         private static int _idCounter = 0;

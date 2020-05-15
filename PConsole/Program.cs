@@ -82,6 +82,7 @@ namespace PConsole
                 }
                 catch (ArgumentException e)
                 {
+                    Console.WriteLine("Unknown runtime error. Repeat the procedure again!");
                     ErrorHandler.Logs(e);
                 }
                 catch (NullReferenceException e)

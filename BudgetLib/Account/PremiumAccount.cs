@@ -4,7 +4,7 @@
     {
         public PremiumAccount(decimal sum) : base(sum, 1000000)
         {
-            Type = "PREMIUM";
+            Type = AccountType.Premium;
         }
     }
 }

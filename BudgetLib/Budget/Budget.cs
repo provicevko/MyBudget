@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.VisualBasic;
 
 namespace BudgetLib
 {
@@ -161,8 +160,12 @@ namespace BudgetLib
             {
                 throw new NullReferenceException("Not find account with id {id}");
             }
-        
-            account.Type = $"{type.ToString().ToUpper()}";
+
+            if (account.Sum > (decimal) type)
+            {
+                throw new ArgumentException("Sum of money more than new accounts'LIMIT");
+            }
+            account.Type = type;
             account.Limit = (decimal) type;
             OnChangeType(new BudgetEventArgs($"Account type (id {id}) changed to {type.ToString (). ToUpper ()}"));
             ToHistory(account, Account.TypeHistoryEvent.GetMoney,

@@ -4,7 +4,7 @@
     {
         public MiddleAccount(decimal sum) : base(sum, 20000)
         {
-            Type = "MIDDLE";
+            Type = AccountType.Middle;
         }
     }
 }
