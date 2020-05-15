@@ -81,7 +81,7 @@ namespace PConsole
             decimal sum = Convert.ToDecimal(Console.ReadLine());
             budget.Withdraw(id,new Item(comment,sum));
         }
-
+ 
         internal static void Transfer(Budget<Account> budget)
         {
             Console.WriteLine("\\Select the account from which the transfer will take place (id):");
