@@ -38,8 +38,7 @@ namespace BudgetLib
         {
             public string Message;
             public TypeHistoryEvent Type;
-            public decimal Sum;
-            public string Item;
+            public Item Item;
         }
         protected internal HistoryAccount _historyAccount;
 

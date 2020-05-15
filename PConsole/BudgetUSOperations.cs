@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using BudgetLib;
-using MoneySpendingItems;
 
 namespace PConsole
 {
@@ -49,75 +48,38 @@ namespace PConsole
             }
         }
         
-        internal static void Put(Budget<Account> budget,PutItems putItems)
+        internal static void Put(Budget<Account> budget)
         {
             Console.WriteLine("Select account (id):");
             AccountIdsList(budget);
             int id = Convert.ToInt32(Console.ReadLine());
-            Console.WriteLine("Select an action to top up (enter a number):");
-            for (int i = 0; i < putItems.GetItems.Count; i++)
+            Console.WriteLine("Enter a comment (desirable 1 word less than 18 symbols):");
+            string comment = Convert.ToString(Console.ReadLine()).ToLower();
+            if (comment.Length > 18 || comment.Replace(" ", "").Length == 0)
             {
-                Console.WriteLine($"{i+1}:\t{putItems.GetItems[i].Name}");
-            }
-            int indexItem = Convert.ToInt32(Console.ReadLine());
-            if (indexItem < 1 || indexItem > putItems.GetItems.Count)
-            {
-                throw new ArgumentOutOfRangeException("indexItem");
-            }
-
-            string item;
-            if (indexItem == putItems.GetItems.Count) // other
-            {
-                Console.WriteLine("Enter a refill comment (up to 18 characters):");
-                item = Convert.ToString(Console.ReadLine()).ToLower();
-                if (item.Length > 18 || item.Replace(" ","").Length == 0)
-                {
-                    Console.WriteLine("Incorrectly entered comment. Repeat the procedure again.");
-                    throw new ArgumentException("Not correctly input comment to put operation");
-                }
-            }
-            else
-            {
-                item = putItems.GetItems[indexItem - 1].Name;
+                Console.WriteLine("Incorrectly entered comment. Repeat the procedure again.");
+                throw new ArgumentException("Keyword must be > 0 and <= 18");
             }
             Console.WriteLine("Enter amount of money to replenish:");
             decimal sum = Convert.ToDecimal(Console.ReadLine());
-            budget.Put(id,sum,item);
+            budget.Put(id,new Item(comment,sum));
         }
 
-        internal static void Withdraw(Budget<Account> budget,SpendItems spendItems)
+        internal static void Withdraw(Budget<Account> budget)
         {
             Console.WriteLine("Select account (id):");
             AccountIdsList(budget);
             int id = Convert.ToInt32(Console.ReadLine());
-            Console.WriteLine("Select action to withdraw (enter number):");
-            for (int i = 0; i < spendItems.GetItems.Count; i++)
+            Console.WriteLine("Enter a comment (desirable 1 word less than 18 symbols):");
+            string comment = Convert.ToString(Console.ReadLine()).ToLower();
+            if (comment.Length > 18 || comment.Replace(" ", "").Length == 0)
             {
-                Console.WriteLine($"{i+1}:\t{spendItems.GetItems[i].Name}");
-            }
-            int indexItem = Convert.ToInt32(Console.ReadLine());
-            if (indexItem < 1 || indexItem > spendItems.GetItems.Count)
-            {
-                throw new ArgumentOutOfRangeException("indexItem");
-            }
-            string item;
-            if (indexItem == spendItems.GetItems.Count) // other
-            {
-                Console.WriteLine("Enter a refill comment (up to 18 characters):");
-                item = Convert.ToString(Console.ReadLine()).ToLower();
-                if (item.Length > 18 || item.Replace(" ","").Length == 0)
-                {
-                    Console.WriteLine("Incorrectly entered comment. Repeat the procedure again.");
-                    throw new ArgumentException("Not correctly input comment to put operation");
-                }
-            }
-            else
-            {
-                item = spendItems.GetItems[indexItem - 1].Name;
+                Console.WriteLine("Incorrectly entered comment. Repeat the procedure again.");
+                throw new ArgumentException("Keyword must be > 0 and <= 18");
             }
             Console.WriteLine("Enter amount of money to replenish:");
             decimal sum = Convert.ToDecimal(Console.ReadLine());
-            budget.Withdraw(id,sum,item);
+            budget.Withdraw(id,new Item(comment,sum));
         }
 
         internal static void Transfer(Budget<Account> budget)
@@ -126,9 +88,11 @@ namespace PConsole
             int id1 = Convert.ToInt32(Console.ReadLine());
             Console.WriteLine("Select the account to which the transfer will take place (id):");
             int id2 = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("Enter a comment:");
+            string comment = Convert.ToString(Console.ReadLine()).ToLower();
             Console.WriteLine("Enter amount of money to replenish:");
             decimal sum = Convert.ToDecimal(Console.ReadLine());
-            budget.Transfer(id1,id2,sum);
+            budget.Transfer(id1,id2,new Item(comment,sum));
         }
 
         internal static void FindAccountInMyBudget(Budget<Account> budget)
@@ -183,14 +147,19 @@ namespace PConsole
             decimal sum = 0;
             if (specificator == "search")
             {
-                Console.WriteLine("Enter a keyword to search for (reserved words: 'discovery', 'translation'):");
+                Console.WriteLine("Enter a keyword to search for (reserved words: 'opening', 'translation'):");
                 string sword = Convert.ToString(Console.ReadLine()).ToLower();
+                if (sword.Length > 18 || sword.Replace(" ", "").Length == 0)
+                {
+                    Console.WriteLine("Incorrectly entered comment. Repeat the procedure again.");
+                    throw new ArgumentException("Keyword must be > 0 and <= 18");
+                }
                 foreach (var val in hst.historyList)
                 {
-                    if (val.Type == type && val.Item == sword)
+                    if (val.Type == type && val.Item.Comment == sword)
                     {
-                        Console.WriteLine(val.Message + "\t" + val.Sum + " UAH" + "\t" + $"[ {val.Item} ]");
-                        sum += val.Sum;
+                        Console.WriteLine(val.Message + "\t" + val.Item.Sum + " UAH" + "\t" + $"[ {val.Item.Comment} ]");
+                        sum += val.Item.Sum;
                     }
                 }
             }
@@ -200,8 +169,8 @@ namespace PConsole
                 {
                     if (val.Type == type)
                     {
-                        Console.WriteLine(val.Message + "\t" + val.Sum + " UAH" + "\t" + $"[ {val.Item} ]");
-                        sum += val.Sum;
+                        Console.WriteLine(val.Message + "\t" + val.Item.Sum + " UAH" + "\t" + $"[ {val.Item.Comment} ]");
+                        sum += val.Item.Sum;
                     }
                 }
             }

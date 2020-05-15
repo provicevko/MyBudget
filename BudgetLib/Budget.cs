@@ -83,7 +83,7 @@ namespace BudgetLib
             newAccount.Opened();
             newAccount.OpenEvent -= openHandler;
             ToHistory(newAccount, Account.TypeHistoryEvent.GetMoney,
-                $"<Received (at the opening) {DateTime.Now}>", sum,"opening");
+                $"<Received (at the opening) {DateTime.Now}>", new Item("opening",sum));
         }
         
         public void CloseAccount(int id)
@@ -124,12 +124,11 @@ namespace BudgetLib
             }
         }
 
-        private void ToHistory(Account account,Account.TypeHistoryEvent type,string message,decimal sum,string item)
+        private void ToHistory(Account account,Account.TypeHistoryEvent type,string message,Item item)
         {
             Account.HistoryStruct historyStruct;
             historyStruct.Type = type;
             historyStruct.Message = message;
-            historyStruct.Sum = sum;
             historyStruct.Item = item;
             account._historyAccount.historyList.Add(historyStruct);
         }
@@ -167,7 +166,7 @@ namespace BudgetLib
             account.Limit = (decimal) type;
             OnChangeType(new BudgetEventArgs($"Account type (id {id}) changed to {type.ToString (). ToUpper ()}"));
             ToHistory(account, Account.TypeHistoryEvent.GetMoney,
-                $"<Change account type {DateTime.Now}>", 0,"opening");
+                $"<Change account type {DateTime.Now}>", new Item("opening",0));
         }
     }
 }

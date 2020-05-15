@@ -5,7 +5,7 @@ namespace BudgetLib
 {
     public partial class Budget<T> : IBudget<T> where T : Account
     {
-        public void Put(int id,decimal sum,string item)
+        public void Put(int id,Item item)
         {
             if (item == null)
             {
@@ -16,11 +16,11 @@ namespace BudgetLib
             {
                 throw new NullReferenceException($"Unreal find account with id {id}");
             }
-            account.Put(sum);
-            ToHistory(account, Account.TypeHistoryEvent.GetMoney, $"<Received {DateTime.Now}>", sum,item);
+            account.Put(item.Sum);
+            ToHistory(account, Account.TypeHistoryEvent.GetMoney, $"<Received {DateTime.Now}>",item);
         }
 
-        public void Withdraw(int id,decimal sum,string item)
+        public void Withdraw(int id,Item item)
         {
             if (item == null)
             {
@@ -31,11 +31,11 @@ namespace BudgetLib
             {
                 throw new NullReferenceException($"Unreal find account with id {id}");
             }
-            account.Withdraw(sum);
-            ToHistory(account, Account.TypeHistoryEvent.GivenMoney, $"<Withdrawn {DateTime.Now}>", sum,item);
+            account.Withdraw(item.Sum);
+            ToHistory(account, Account.TypeHistoryEvent.GivenMoney, $"<Withdrawn {DateTime.Now}>",item);
         }
 
-        public void Transfer(int id1,int id2, decimal sum)
+        public void Transfer(int id1,int id2, Item item)
         {
             T account1 = FindAccount(id1);
             if (account1 == null)
@@ -48,11 +48,11 @@ namespace BudgetLib
             {
                 throw new NullReferenceException($"Unreal find account with id {id2}");
             }
-            account1.Transfer(account2,sum);
+            account1.Transfer(account2,item.Sum);
             ToHistory(account1, Account.TypeHistoryEvent.GivenMoney,
-                $"<Transferred to account (id {id2}) {DateTime.Now}>", sum,"transfer");
+                $"<Transferred to account (id {id2}) {DateTime.Now}>", item);
             ToHistory(account2, Account.TypeHistoryEvent.GetMoney,
-                $"<Received by transfer from account (id {id1}) {DateTime.Now}>", sum,"transfer");
+                $"<Received by transfer from account (id {id1}) {DateTime.Now}>",item);
         }
     }
 }

@@ -16,8 +16,8 @@
         public T FindAccount(int id);
         private void ToHistory(Account account, Account.TypeHistoryEvent type, string message, decimal sum){}
         public void GetAccountInfo(int id);
-        public void Put(int id, decimal sum,string item);
-        public void Withdraw(int id, decimal sum,string item);
-        public void Transfer(int id1, int id2, decimal sum);
+        public void Put(int id,Item item);
+        public void Withdraw(int id,Item item);
+        public void Transfer(int id1, int id2,Item item);
     }
 }
