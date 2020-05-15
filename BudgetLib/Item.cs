@@ -15,5 +15,5 @@ namespace BudgetLib
             Comment = comment;
             Sum = sum;
         }
-    }
+    } 
 }
