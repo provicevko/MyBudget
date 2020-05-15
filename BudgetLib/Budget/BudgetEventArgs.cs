@@ -1,6 +1,7 @@
 ﻿using System;
+using BudgetLib.Account;
 
-namespace BudgetLib
+namespace BudgetLib.Budget
 {
     public delegate void BudgetStateHandler(object sender, BudgetEventArgs e);
     public class BudgetEventArgs

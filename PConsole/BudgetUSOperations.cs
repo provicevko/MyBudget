@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using BudgetLib;
+using BudgetLib.Account;
+using BudgetLib.Budget;
+using PConsole.EventHandlers;
 
 namespace PConsole
 {

@@ -1,6 +1,8 @@
-﻿namespace BudgetLib
+﻿using BudgetLib.Account;
+
+namespace BudgetLib.Budget
 {
-    internal interface IBudget<T> where T : Account
+    internal interface IBudget<T> where T : Account.Account
     {
         public event BudgetStateHandler FindAccountEvent;
         public event BudgetStateHandler AccountInfo;
@@ -14,7 +16,7 @@
 
         public void CloseAccount(int id);
         public T FindAccount(int id);
-        private void ToHistory(Account account, Account.TypeHistoryEvent type, string message, decimal sum){}
+        private void ToHistory(Account.Account account, Account.Account.TypeHistoryEvent type, string message, decimal sum){}
         public void GetAccountInfo(int id);
         public void Put(int id,Item item);
         public void Withdraw(int id,Item item);

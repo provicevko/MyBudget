@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using BudgetLib.Budget;
 
-namespace BudgetLib
+namespace BudgetLib.Account
 {
     public abstract class Account : IAccount
     {

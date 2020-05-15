@@ -1,4 +1,4 @@
-﻿namespace BudgetLib
+﻿namespace BudgetLib.Account
 {
     public delegate void AccountStateHandler(object sender, AccountEventArgs e);
     public class AccountEventArgs

@@ -1,7 +1,7 @@
 ﻿using System;
-using BudgetLib;
+using BudgetLib.Budget;
 
-namespace PConsole
+namespace PConsole.EventHandlers
 {
     public static class BudgetHandler
     {

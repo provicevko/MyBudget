@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BudgetLib
+namespace BudgetLib.Budget
 {
     public class Item
     {

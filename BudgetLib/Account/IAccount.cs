@@ -1,4 +1,4 @@
-﻿namespace BudgetLib
+﻿namespace BudgetLib.Account
 {
     internal interface IAccount
     {

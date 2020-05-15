@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using BudgetLib.Account;
 
-namespace BudgetLib
+namespace BudgetLib.Budget
 {
-    public partial class Budget<T> : IBudget<T> where T : Account
+    public partial class Budget<T> : IBudget<T> where T : Account.Account
     {
         public event BudgetStateHandler FindAccountEvent;
         public event BudgetStateHandler AccountInfo;
@@ -81,7 +82,7 @@ namespace BudgetLib
 
             newAccount.Opened();
             newAccount.OpenEvent -= openHandler;
-            ToHistory(newAccount, Account.TypeHistoryEvent.GetMoney,
+            ToHistory(newAccount, Account.Account.TypeHistoryEvent.GetMoney,
                 $"<Received (at the opening) {DateTime.Now}>", new Item("opening",sum));
         }
         
@@ -123,16 +124,16 @@ namespace BudgetLib
             }
         }
 
-        private void ToHistory(Account account,Account.TypeHistoryEvent type,string message,Item item)
+        private void ToHistory(Account.Account account,Account.Account.TypeHistoryEvent type,string message,Item item)
         {
-            Account.HistoryStruct historyStruct;
+            Account.Account.HistoryStruct historyStruct;
             historyStruct.Type = type;
             historyStruct.Message = message;
             historyStruct.Item = item;
             account._historyAccount.historyList.Add(historyStruct);
         }
 
-        public Account.HistoryAccount HistoryInfo(int id)
+        public Account.Account.HistoryAccount HistoryInfo(int id)
         {
             T account = FindAccount(id);
             if (account == null)
@@ -163,12 +164,13 @@ namespace BudgetLib
 
             if (account.Sum > (decimal) type)
             {
+                OnChangeType(new BudgetEventArgs("Sum of money more than new accounts'LIMIT."));
                 throw new ArgumentException("Sum of money more than new accounts'LIMIT");
             }
             account.Type = type;
             account.Limit = (decimal) type;
             OnChangeType(new BudgetEventArgs($"Account type (id {id}) changed to {type.ToString (). ToUpper ()}"));
-            ToHistory(account, Account.TypeHistoryEvent.GetMoney,
+            ToHistory(account, Account.Account.TypeHistoryEvent.GetMoney,
                 $"<Change account type {DateTime.Now}>", new Item("opening",0));
         }
     }

@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace BudgetLib
+namespace BudgetLib.Budget
 {
-    public partial class Budget<T> : IBudget<T> where T : Account
+    public partial class Budget<T> : IBudget<T> where T : Account.Account
     {
         public void Put(int id,Item item)
         {
@@ -16,7 +16,7 @@ namespace BudgetLib
                 throw new NullReferenceException($"Unreal find account with id {id}");
             }
             account.Put(item.Sum);
-            ToHistory(account, Account.TypeHistoryEvent.GetMoney, $"<Received {DateTime.Now}>",item);
+            ToHistory(account, Account.Account.TypeHistoryEvent.GetMoney, $"<Received {DateTime.Now}>",item);
         }
 
         public void Withdraw(int id,Item item)
@@ -31,7 +31,7 @@ namespace BudgetLib
                 throw new NullReferenceException($"Unreal find account with id {id}");
             }
             account.Withdraw(item.Sum);
-            ToHistory(account, Account.TypeHistoryEvent.GivenMoney, $"<Withdrawn {DateTime.Now}>",item);
+            ToHistory(account, Account.Account.TypeHistoryEvent.GivenMoney, $"<Withdrawn {DateTime.Now}>",item);
         }
 
         public void Transfer(int id1,int id2, Item item)
@@ -48,9 +48,9 @@ namespace BudgetLib
                 throw new NullReferenceException($"Unreal find account with id {id2}");
             }
             account1.Transfer(account2,item.Sum);
-            ToHistory(account1, Account.TypeHistoryEvent.GivenMoney,
+            ToHistory(account1, Account.Account.TypeHistoryEvent.GivenMoney,
                 $"<Transferred to account (id {id2}) {DateTime.Now}>", item);
-            ToHistory(account2, Account.TypeHistoryEvent.GetMoney,
+            ToHistory(account2, Account.Account.TypeHistoryEvent.GetMoney,
                 $"<Received by transfer from account (id {id1}) {DateTime.Now}>",item);
         }
     }
