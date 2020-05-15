@@ -98,7 +98,7 @@ namespace PConsole
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("The procedure was aborted. Check that the input is correct.");
+                    Console.WriteLine("The procedure was aborted. Check that the input values are correct.");
                     ErrorHandler.Logs(e);
                 }
             }
