@@ -23,7 +23,7 @@ namespace PConsole
             }
             catch (Exception)
             {
-                throw new FileLoadException("Logging info error");
+                throw new IOException("Logging info error");
             }
         }
     }

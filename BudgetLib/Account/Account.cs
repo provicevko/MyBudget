@@ -18,8 +18,8 @@ namespace BudgetLib.Account
         public DateTime RegData { get;}
 
         private static int _idCounter = 0;
-        
-        public Account(decimal sum, decimal limit)
+
+        protected internal Account(decimal sum, decimal limit)
         {
             Sum = sum;
             Limit = limit;
@@ -44,10 +44,10 @@ namespace BudgetLib.Account
 
         public class HistoryAccount
         {
-            public List<HistoryStruct> historyList { get; protected internal set;}
+            public List<HistoryStruct> HistoryList { get; protected internal set;}
             protected internal HistoryAccount()
             {
-                historyList = new List<HistoryStruct>();
+                HistoryList = new List<HistoryStruct>();
             }
         }
         private void CallEvent(AccountEventArgs e, AccountStateHandler handler)
@@ -67,8 +67,16 @@ namespace BudgetLib.Account
         protected internal virtual void Opened() =>
             OnOpened(new AccountEventArgs($"A new account of type {Type} has been opened. Account ID: {Id}."));
 
-        protected internal virtual void Closed() =>
+        protected internal virtual void Closed()
+        {
+            if (Sum > 0)
+            {
+                OnClosed(new AccountEventArgs($"The account (id {Id}) can't be closed. Sum of money must be 0."));
+                throw new ArgumentOutOfRangeException("Sum");
+            }
             OnClosed(new AccountEventArgs($"The account of type {Type} is closed. Account ID: {Id}."));
+        }
+            
 
         public virtual void Put(decimal sum)
         {

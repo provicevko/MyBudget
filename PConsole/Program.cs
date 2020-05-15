@@ -23,9 +23,8 @@ namespace PConsole
             "<> 'ainfo' - account information.\n<> 'hinfo' - transaction history.\n<> 'tchange' - change account type.\n<> 'close' - close account.\n" +
                 "<> 'help' - list of commands.\n<> 'exit' - exit.";
             Console.WriteLine(description);
-
-            bool alive = true;
-            while (alive)
+            
+            while (true)
             {
                 try
                 {
@@ -79,20 +78,20 @@ namespace PConsole
                 }
                 catch (ArgumentOutOfRangeException e)
                 {
-                    Console.WriteLine("Unknown runtime error. Repeat the procedure again!");
+                    Console.WriteLine("Runtime error. Repeat the procedure again!");
                     ErrorHandler.Logs(e);
                 }
                 catch (ArgumentException e)
                 {
-                    Console.WriteLine("Unknown runtime error. Repeat the procedure again!");
+                    Console.WriteLine("Runtime error. Check that the input values are correct!");
                     ErrorHandler.Logs(e);
                 }
                 catch (NullReferenceException e)
                 {
-                    Console.WriteLine("The procedure was aborted. Check that the input is correct.");
+                    Console.WriteLine("The procedure was aborted. Check that the input values are correct.");
                     ErrorHandler.Logs(e);
                 }
-                catch (FileLoadException)
+                catch (IOException)
                 {
                     Console.WriteLine("The program does not work correctly. Try restarting!");
                     break;

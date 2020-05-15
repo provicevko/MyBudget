@@ -79,7 +79,8 @@ namespace BudgetLib.Budget
             newAccount.PutEvent += putHandler;
             newAccount.WithdrawEvent += withdrawHandler;
             newAccount.TransferEvent += transferHandler;
-
+            
+            OnOpenAccount(new BudgetEventArgs("Operation was successfully completed."));
             newAccount.Opened();
             newAccount.OpenEvent -= openHandler;
             ToHistory(newAccount, Account.Account.TypeHistoryEvent.GetMoney,
@@ -130,7 +131,7 @@ namespace BudgetLib.Budget
             historyStruct.Type = type;
             historyStruct.Message = message;
             historyStruct.Item = item;
-            account._historyAccount.historyList.Add(historyStruct);
+            account._historyAccount.HistoryList.Add(historyStruct);
         }
 
         public Account.Account.HistoryAccount HistoryInfo(int id)
@@ -150,7 +151,7 @@ namespace BudgetLib.Budget
             {
                 throw new NullReferenceException($"Unreal find account with id {id}");
             }
-            BudgetEventArgs info = new BudgetEventArgs($"Information for an account with id {id}:",account.Sum){Id = id,Type = account.Type,Limit = account.Limit,RegData = account.RegData};
+            BudgetEventArgs info = new BudgetEventArgs($"Information for an account with id {id}:",account.Sum){Id = id,Type = account.Type,Limit = account.Limit,DataTime = account.RegData};
             OnAccountInfo(info);
         }
 

@@ -28,7 +28,7 @@ namespace PConsole
                     break;
                 default:
                     Console.WriteLine("Invalid account type specified. Please check your input.");
-                    return;
+                    throw new ArgumentException("acType must be: 'small', 'middle' or 'premium'");
             }
             Console.WriteLine("Enter the initial amount of money in the account:");
             decimal sum = Convert.ToDecimal(Console.ReadLine());
@@ -86,12 +86,17 @@ namespace PConsole
  
         internal static void Transfer(Budget<Account> budget)
         {
-            Console.WriteLine("\\Select the account from which the transfer will take place (id):");
+            Console.WriteLine(@"\Select the account from which the transfer will take place (id):");
             int id1 = Convert.ToInt32(Console.ReadLine());
             Console.WriteLine("Select the account to which the transfer will take place (id):");
             int id2 = Convert.ToInt32(Console.ReadLine());
-            Console.WriteLine("Enter a comment:");
+            Console.WriteLine("Enter a comment (desirable 1 word less than 18 symbols):");
             string comment = Convert.ToString(Console.ReadLine()).ToLower();
+            if (comment.Length > 18 || comment.Replace(" ", "").Length == 0)
+            {
+                Console.WriteLine("Incorrectly entered comment. Repeat the procedure again.");
+                throw new ArgumentException("Keyword must be > 0 and <= 18");
+            }
             Console.WriteLine("Enter amount of money to replenish:");
             decimal sum = Convert.ToDecimal(Console.ReadLine());
             budget.Transfer(id1,id2,new Item(comment,sum));
@@ -118,7 +123,7 @@ namespace PConsole
         {
             Console.WriteLine("Enter account number (id):");
             int id = Convert.ToInt32(Console.ReadLine());
-            Console.WriteLine("Select a search type:\n\t1. 'get' - received.\n\t2. 'give' - removed.");
+            Console.WriteLine("Select a search type:\n\t1. 'get' - received.\n\t2. 'give' - withdrawn.");
             string command = Convert.ToString(Console.ReadLine());
             Account.TypeHistoryEvent type;
             string specificator;
@@ -136,7 +141,7 @@ namespace PConsole
                     break;
                 default:
                     Console.WriteLine("Unknown command. Please try again!");
-                    return;
+                    throw new ArgumentException("Command can be 'get' or 'give'");
             }
 
             if (specificator != "all" && specificator != "search")
@@ -156,7 +161,7 @@ namespace PConsole
                     Console.WriteLine("Incorrectly entered comment. Repeat the procedure again.");
                     throw new ArgumentException("Keyword must be > 0 and <= 18");
                 }
-                foreach (var val in hst.historyList)
+                foreach (var val in hst.HistoryList)
                 {
                     if (val.Type == type && val.Item.Comment == sword)
                     {
@@ -167,7 +172,7 @@ namespace PConsole
             }
             else
             {
-                foreach (var val in hst.historyList)
+                foreach (var val in hst.HistoryList)
                 {
                     if (val.Type == type)
                     {
@@ -206,7 +211,7 @@ namespace PConsole
                     break;
                 default:
                     Console.WriteLine("Invalid account type specified. Please check your input.");
-                    return;
+                    throw new ArgumentException("acType must be: 'small', 'middle' or 'premium'");
             }
             budget.ChangeTypeAccount(id,acType);
         }
