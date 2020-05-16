@@ -172,7 +172,7 @@ namespace BudgetLib.Budget
             account.Limit = (decimal) type;
             OnChangeType(new BudgetEventArgs($"Account type (id {id}) changed to {type.ToString (). ToUpper ()}"));
             ToHistory(account, Account.Account.TypeHistoryEvent.GetMoney,
-                $"<Change account type {DateTime.Now}>", new Item("opening",0));
+                $"<Changed account type {DateTime.Now}>", new Item("opening",0));
         }
     }
 }
