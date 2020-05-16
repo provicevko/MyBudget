@@ -154,7 +154,7 @@ namespace PConsole
             decimal sum = 0;
             if (specificator == "search")
             {
-                Console.WriteLine("Enter a keyword to search for (reserved words: 'opening', 'translation'):");
+                Console.WriteLine("Enter a keyword to search for (reserved words: 'opening'):");
                 string sword = Convert.ToString(Console.ReadLine()).ToLower();
                 if (sword.Length > 18 || sword.Replace(" ", "").Length == 0)
                 {
