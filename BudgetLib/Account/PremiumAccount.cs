@@ -2,7 +2,7 @@
 {
     public class PremiumAccount : Account
     {
-        public PremiumAccount(decimal sum) : base(sum, 1000000)
+        public PremiumAccount(decimal sum) : base(sum, (decimal)AccountType.Premium)
         {
             Type = AccountType.Premium;
         }

@@ -2,7 +2,7 @@
 {
     public class MiddleAccount : Account
     {
-        public MiddleAccount(decimal sum) : base(sum, 20000)
+        public MiddleAccount(decimal sum) : base(sum, (decimal)AccountType.Middle)
         {
             Type = AccountType.Middle;
         }

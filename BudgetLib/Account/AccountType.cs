@@ -1,6 +1,6 @@
 ﻿namespace BudgetLib.Account
 {
-    public enum AccountType
+    public enum AccountType // account types
     {
         Small = 1000,
         Middle = 20000,

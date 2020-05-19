@@ -2,7 +2,7 @@
 {
     public class SmallAccount : Account
     {
-        public SmallAccount(decimal sum) : base(sum, 1000)
+        public SmallAccount(decimal sum) : base(sum, (decimal)AccountType.Small)
         {
             Type = AccountType.Small;
         }

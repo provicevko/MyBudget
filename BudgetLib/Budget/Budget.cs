@@ -10,8 +10,8 @@ namespace BudgetLib.Budget
         public event BudgetStateHandler AccountInfo;
         public event BudgetStateHandler OpenAccountEvent;
         public event BudgetStateHandler ChangeTypeAccountEvent;
-        private List<T> _accounts = new List<T>();
-        public string Name { get;}
+        private List<T> _accounts = new List<T>(); // all accounts
+        public string Name { get;} // name of budget
         public Budget(string name)
         {
             Name = name;
@@ -30,7 +30,7 @@ namespace BudgetLib.Budget
         private void OnOpenAccount(BudgetEventArgs e) => CallEvent(e, OpenAccountEvent);
         private void OnChangeType(BudgetEventArgs e) => CallEvent(e, ChangeTypeAccountEvent);
         public void OpenAccount(AccountType type, decimal sum, AccountStateHandler openHandler, AccountStateHandler closeHandler, AccountStateHandler putHandler,
-            AccountStateHandler withdrawHandler, AccountStateHandler transferHandler)
+            AccountStateHandler withdrawHandler, AccountStateHandler transferHandler) // open new account
         {
             if (sum < 0)
             {
@@ -87,7 +87,7 @@ namespace BudgetLib.Budget
                 $"<Received (at the opening) {DateTime.Now}>", new Item("opening",sum));
         }
         
-        public void CloseAccount(int id)
+        public void CloseAccount(int id) // close exist account
         {
             T account = FindAccount(id);
             if (account == null)
@@ -98,7 +98,7 @@ namespace BudgetLib.Budget
             _accounts.Remove(account);
         }
 
-        public T FindAccount(int id)
+        public T FindAccount(int id) // find account with id
         {
             foreach (var instance in _accounts)
             {
@@ -111,7 +111,7 @@ namespace BudgetLib.Budget
             return null;
         }
 
-        public List<int> GetListAccountsId
+        public List<int> GetListAccountsId // get ids list
         {
             get
             {
@@ -125,7 +125,7 @@ namespace BudgetLib.Budget
             }
         }
 
-        private void ToHistory(Account.Account account,Account.Account.TypeHistoryEvent type,string message,Item item)
+        private void ToHistory(Account.Account account,Account.Account.TypeHistoryEvent type,string message,Item item) // push to history of account
         {
             Account.Account.HistoryStruct historyStruct;
             historyStruct.Type = type;
@@ -134,7 +134,7 @@ namespace BudgetLib.Budget
             account._historyAccount.HistoryList.Add(historyStruct);
         }
 
-        public Account.Account.HistoryAccount HistoryInfo(int id)
+        public Account.Account.HistoryAccount HistoryInfo(int id) // get accounts' history info 
         {
             T account = FindAccount(id);
             if (account == null)
@@ -144,7 +144,7 @@ namespace BudgetLib.Budget
             
             return account._historyAccount;
         }
-        public void GetAccountInfo(int id)
+        public void GetAccountInfo(int id) // get info about account
         {
             T account = FindAccount(id);
             if (account == null)
@@ -155,7 +155,7 @@ namespace BudgetLib.Budget
             OnAccountInfo(info);
         }
 
-        public void ChangeTypeAccount(int id, AccountType type)
+        public void ChangeTypeAccount(int id, AccountType type) // change type of account
         {
             T account = FindAccount(id);
             if (account == null)

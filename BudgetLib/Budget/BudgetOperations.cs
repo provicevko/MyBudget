@@ -4,7 +4,7 @@ namespace BudgetLib.Budget
 {
     public partial class Budget<T> : IBudget<T> where T : Account.Account
     {
-        public void Put(int id,Item item)
+        public void Put(int id,Item item) // put money to the account
         {
             if (item == null)
             {
@@ -19,7 +19,7 @@ namespace BudgetLib.Budget
             ToHistory(account, Account.Account.TypeHistoryEvent.GetMoney, $"<Received {DateTime.Now}>",item);
         }
 
-        public void Withdraw(int id,Item item)
+        public void Withdraw(int id,Item item) // withdraw money from account
         {
             if (item == null)
             {
@@ -34,7 +34,7 @@ namespace BudgetLib.Budget
             ToHistory(account, Account.Account.TypeHistoryEvent.GivenMoney, $"<Withdrawn {DateTime.Now}>",item);
         }
 
-        public void Transfer(int id1,int id2, Item item)
+        public void Transfer(int id1,int id2, Item item) // transfer money to other account
         {
             T account1 = FindAccount(id1);
             if (account1 == null)

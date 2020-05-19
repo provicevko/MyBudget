@@ -2,7 +2,7 @@
 
 namespace BudgetLib.Budget
 {
-    public class Item
+    public class Item // info about money operations
     {
         public string Comment { get;}
         public decimal Sum { get; }

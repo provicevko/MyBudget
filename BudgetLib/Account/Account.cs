@@ -4,18 +4,18 @@ using BudgetLib.Budget;
 
 namespace BudgetLib.Account
 {
-    public abstract class Account : IAccount
+    public abstract class Account : IAccount 
     {
         protected internal event AccountStateHandler OpenEvent;
         protected internal event AccountStateHandler CloseEvent;
         protected internal event AccountStateHandler PutEvent;
         protected internal event AccountStateHandler WithdrawEvent;
         protected internal event AccountStateHandler TransferEvent;
-        public decimal Sum { get; private set; }
-        public decimal Limit { get; protected internal set; }
-        public int Id { get; }
-        public AccountType Type { get; protected internal set; }
-        public DateTime RegData { get;}
+        public decimal Sum { get; private set; } // sum of money
+        public decimal Limit { get; protected internal set; } // limit money
+        public int Id { get; } // accounts' id
+        public AccountType Type { get; protected internal set; } // type account
+        public DateTime RegData { get;} // register time
 
         private static int _idCounter = 0;
 
@@ -42,7 +42,7 @@ namespace BudgetLib.Account
         }
         protected internal HistoryAccount _historyAccount;
 
-        public class HistoryAccount
+        public class HistoryAccount // history operations of account
         {
             public List<HistoryStruct> HistoryList { get; protected internal set;}
             protected internal HistoryAccount()
@@ -64,10 +64,10 @@ namespace BudgetLib.Account
         protected virtual void OnWithdrawed(AccountEventArgs e) => CallEvent(e, WithdrawEvent);
         protected virtual void OnTransfer(AccountEventArgs e) => CallEvent(e, TransferEvent);
 
-        protected internal virtual void Opened() =>
+        protected internal virtual void Opened() => // open account
             OnOpened(new AccountEventArgs($"A new account of type {Type} has been opened. Account ID: {Id}."));
 
-        protected internal virtual void Closed()
+        protected internal virtual void Closed() // close account
         {
             if (Sum > 0)
             {
@@ -78,7 +78,7 @@ namespace BudgetLib.Account
         }
             
 
-        public virtual void Put(decimal sum)
+        public virtual void Put(decimal sum) // put money to the account
         {
             if (sum > 0)
             {
@@ -100,7 +100,7 @@ namespace BudgetLib.Account
             }
         }
 
-        public virtual void Withdraw(decimal sum)
+        public virtual void Withdraw(decimal sum) // withdraw money from account
         {
             if (sum <= 0)
             {
@@ -118,7 +118,7 @@ namespace BudgetLib.Account
             OnWithdrawed(new AccountEventArgs($"{sum} UAH was withdrawn from the account."));
         }
 
-        public virtual void Transfer(Account account, decimal sum)
+        public virtual void Transfer(Account account, decimal sum) // transfer money to other account
         {
             if (sum <= 0)
             {

@@ -1,7 +1,7 @@
 ﻿namespace BudgetLib.Account
 {
     public delegate void AccountStateHandler(object sender, AccountEventArgs e);
-    public class AccountEventArgs
+    public class AccountEventArgs // info object for events
     {
         public string Message { get; }
 

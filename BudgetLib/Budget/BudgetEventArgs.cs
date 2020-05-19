@@ -4,7 +4,7 @@ using BudgetLib.Account;
 namespace BudgetLib.Budget
 {
     public delegate void BudgetStateHandler(object sender, BudgetEventArgs e);
-    public class BudgetEventArgs
+    public class BudgetEventArgs // info object for events
     {
         public string Message { get; }
         public int Id { get; internal set; }
