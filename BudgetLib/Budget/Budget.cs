@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using BudgetLib.Account;
 
 namespace BudgetLib.Budget
 {
     public partial class Budget<T> : IBudget<T> where T : Account.Account
     {
-        public event BudgetStateHandler FindAccountEvent;
-        
+
         private List<T> _accounts = new List<T>(); // all accounts
         public string Name { get;} // name of budget
         public Budget(string name)
@@ -15,15 +15,6 @@ namespace BudgetLib.Budget
             Name = name;
         }
 
-        private void CallEvent(BudgetEventArgs e, BudgetStateHandler handler)
-        {
-            if (e != null)
-            {
-                handler?.Invoke(this,e);
-            }
-        }
-
-        private void OnFindAccount(BudgetEventArgs e) => CallEvent(e, FindAccountEvent);
         public void OpenAccount(AccountType type, decimal sum, AccountStateHandler openHandler, AccountStateHandler closeHandler, AccountStateHandler putHandler,
             AccountStateHandler withdrawHandler, AccountStateHandler transferHandler,AccountStateHandler changeTypeHandler,AccountStateHandler accountInfo) // open new account
         {
@@ -55,12 +46,13 @@ namespace BudgetLib.Budget
             newAccount.WithdrawEvent += withdrawHandler;
             newAccount.TransferEvent += transferHandler;
             newAccount.ChangeAccountTypeEvent += changeTypeHandler;
-            newAccount.AccountInfo += accountInfo;
+            newAccount.GetAccountInfoEvent += accountInfo;
             
-            newAccount.Opened();
+            Item item = new Item("opening",sum);
+            newAccount.Opened(item);
             newAccount.OpenEvent -= openHandler;
-            ToHistory(newAccount, Account.Account.TypeHistoryEvent.GetMoney,
-                $"<Received (at the opening) {DateTime.Now}>", new Item("opening",sum));
+            // ToHistory(newAccount, Account.Account.TypeHistoryEvent.GetMoney,
+            //     $"<Received (at the opening) {DateTime.Now}>", new Item("opening",sum));
         }
         
         public void CloseAccount(int id) // close exist account
@@ -83,7 +75,6 @@ namespace BudgetLib.Budget
                     return instance;
                 }
             }
-            OnFindAccount(new BudgetEventArgs($"Account with id {id} not found."));
             return null;
         }
 
@@ -101,16 +92,7 @@ namespace BudgetLib.Budget
             }
         }
 
-        private static void ToHistory(Account.Account account,Account.Account.TypeHistoryEvent type,string message,Item item) // push to history of account
-        {
-            Account.Account.HistoryStruct historyStruct;
-            historyStruct.Type = type;
-            historyStruct.Message = message;
-            historyStruct.Item = item;
-            account._historyAccount.HistoryList.Add(historyStruct);
-        }
-
-        public Account.Account.HistoryAccount HistoryInfo(int id) // get accounts' history info 
+        public ReadOnlyCollection<Account.Account.HistoryStruct> HistoryInfo(int id) // get accounts' history info 
         {
             T account = FindAccount(id);
             if (account == null)
@@ -118,7 +100,7 @@ namespace BudgetLib.Budget
                 throw new NullReferenceException($"Unreal find account with id {id}");
             }
             
-            return account._historyAccount;
+            return account.HistoryList;
         }
         public void GetAccountInfo(int id) // get info about account
         {
@@ -139,8 +121,8 @@ namespace BudgetLib.Budget
             }
             
             account.ChangeTypeAccount(type);
-            ToHistory(account, Account.Account.TypeHistoryEvent.GetMoney,
-                $"<Changed account type {DateTime.Now}>", new Item("opening",0));
+            // ToHistory(account, Account.Account.TypeHistoryEvent.GetMoney,
+            //     $"<Changed account type {DateTime.Now}>", new Item("opening",0));
         }
     }
 }

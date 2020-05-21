@@ -15,8 +15,7 @@ namespace BudgetLib.Budget
             {
                 throw new NullReferenceException($"Unreal find account with id {id}");
             }
-            account.Put(item.Sum);
-            ToHistory(account, Account.Account.TypeHistoryEvent.GetMoney, $"<Received {DateTime.Now}>",item);
+            account.Put(item);
         }
 
         public void Withdraw(int id,Item item) // withdraw money from account
@@ -30,8 +29,7 @@ namespace BudgetLib.Budget
             {
                 throw new NullReferenceException($"Unreal find account with id {id}");
             }
-            account.Withdraw(item.Sum);
-            ToHistory(account, Account.Account.TypeHistoryEvent.GivenMoney, $"<Withdrawn {DateTime.Now}>",item);
+            account.Withdraw(item);
         }
 
         public void Transfer(int id1,int id2, Item item) // transfer money to other account
@@ -47,11 +45,7 @@ namespace BudgetLib.Budget
             {
                 throw new NullReferenceException($"Unreal find account with id {id2}");
             }
-            account1.Transfer(account2,item.Sum);
-            ToHistory(account1, Account.Account.TypeHistoryEvent.GivenMoney,
-                $"<Transferred to account (id {id2}) {DateTime.Now}>", item);
-            ToHistory(account2, Account.Account.TypeHistoryEvent.GetMoney,
-                $"<Received by transfer from account (id {id1}) {DateTime.Now}>",item);
+            account1.Transfer(account2,item);
         }
     }
 }

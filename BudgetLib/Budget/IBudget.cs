@@ -4,7 +4,6 @@ namespace BudgetLib.Budget
 {
     internal interface IBudget<T> where T : Account.Account
     {
-        public event BudgetStateHandler FindAccountEvent;
         public string Name { get; }
 
         public void OpenAccount(AccountType type, decimal sum, AccountStateHandler openHandler,

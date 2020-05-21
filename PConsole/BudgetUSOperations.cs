@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using BudgetLib.Account;
 using BudgetLib.Budget;
 using PConsole.EventHandlers;
@@ -108,7 +109,11 @@ namespace PConsole
             int id = Convert.ToInt32(Console.ReadLine());
             if (budget.FindAccount(id) != null)
             {
-                Console.WriteLine("The account exists.");
+                Console.WriteLine($"The account with id {id} exists.");
+            }
+            else
+            {
+                Console.WriteLine($"The account with id {id} doesn't exist.");
             }
         }
 
@@ -150,7 +155,8 @@ namespace PConsole
                 throw new ArgumentException("Specificator can be 'all' or 'search'");
             }
             Console.WriteLine("History of operations:");
-            Account.HistoryAccount hst = budget.HistoryInfo(id);
+            ReadOnlyCollection<Account.HistoryStruct> hst = budget.HistoryInfo(id);
+            
             decimal sum = 0;
             if (specificator == "search")
             {
@@ -161,22 +167,22 @@ namespace PConsole
                     Console.WriteLine("Incorrectly entered comment. Repeat the procedure again.");
                     throw new ArgumentException("Keyword must be > 0 and <= 18");
                 }
-                foreach (var val in hst.HistoryList)
+                foreach (var val in hst)
                 {
                     if (val.Type == type && val.Item.Comment == sword)
                     {
-                        Console.WriteLine(val.Message + "\t" + val.Item.Sum + " UAH" + "\t" + $"[ {val.Item.Comment} ]");
+                        Console.WriteLine($"<{val.Message}\t{val.Time}>\t{val.Item.Sum} UAH\t[ {val.Item.Comment} ]");
                         sum += val.Item.Sum;
                     }
                 }
             }
             else
             {
-                foreach (var val in hst.HistoryList)
+                foreach (var val in hst)
                 {
                     if (val.Type == type)
                     {
-                        Console.WriteLine(val.Message + "\t" + val.Item.Sum + " UAH" + "\t" + $"[ {val.Item.Comment} ]");
+                        Console.WriteLine($"<{val.Message}\t{val.Time}>\t{val.Item.Sum} UAH\t[ {val.Item.Comment} ]");
                         sum += val.Item.Sum;
                     }
                 }

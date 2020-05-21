@@ -2,7 +2,6 @@
 using System.IO;
 using BudgetLib.Account;
 using BudgetLib.Budget;
-using PConsole.EventHandlers;
 
 namespace PConsole
 {
@@ -13,7 +12,6 @@ namespace PConsole
             Console.OutputEncoding = System.Text.Encoding.UTF8;
 
             Budget<Account> budget = new Budget<Account>("Provice budget");
-            budget.FindAccountEvent += BudgetHandler.FindAccountHandler;
 
             string description = "Commands:\n<> 'new' - open a new account.\n<> 'put' - put on the account.\n<> 'withdraw' - withdraw from the account.\n"+
                                  "<> 'transfer' - transfer to another account.\n<> 'search' - account search.\n<> 'mylist' - list of my accounts.\n"+

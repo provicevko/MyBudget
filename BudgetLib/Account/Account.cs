@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using BudgetLib.Budget;
 
 namespace BudgetLib.Account
@@ -12,7 +13,7 @@ namespace BudgetLib.Account
         protected internal event AccountStateHandler WithdrawEvent;
         protected internal event AccountStateHandler TransferEvent;
         protected internal event AccountStateHandler ChangeAccountTypeEvent;
-        protected internal event AccountStateHandler AccountInfo;
+        protected internal event AccountStateHandler GetAccountInfoEvent;
 
 
         public decimal Sum { get; private set; } // sum of money
@@ -20,6 +21,10 @@ namespace BudgetLib.Account
         public int Id { get; } // accounts' id
         public AccountType Type { get; protected set; } // type account
         public DateTime RegData { get;} // register time
+
+        protected List<HistoryStruct> _HistoryList; // history of account
+
+        public ReadOnlyCollection<HistoryStruct> HistoryList => _HistoryList.AsReadOnly();
 
         private static int _idCounter = 0;
 
@@ -33,7 +38,7 @@ namespace BudgetLib.Account
             Limit = limit;
             Id = ++_idCounter;
             RegData = DateTime.Now;
-            _historyAccount = new HistoryAccount();
+            _HistoryList = new List<HistoryStruct>();
         }
 
         public enum TypeHistoryEvent
@@ -46,18 +51,10 @@ namespace BudgetLib.Account
         {
             public string Message;
             public TypeHistoryEvent Type;
+            public DateTime Time;
             public Item Item;
         }
-        protected internal HistoryAccount _historyAccount;
 
-        public class HistoryAccount // history operations of account
-        {
-            public List<HistoryStruct> HistoryList { get; protected internal set;}
-            protected internal HistoryAccount()
-            {
-                HistoryList = new List<HistoryStruct>();
-            }
-        }
         private void CallEvent(AccountEventArgs e, AccountStateHandler handler)
         {
             if (e != null)
@@ -72,11 +69,14 @@ namespace BudgetLib.Account
         protected virtual void OnWithdrawed(AccountEventArgs e) => CallEvent(e, WithdrawEvent);
         protected virtual void OnTransfer(AccountEventArgs e) => CallEvent(e, TransferEvent);
         protected virtual void OnChangeType(AccountEventArgs e) => CallEvent(e, ChangeAccountTypeEvent);
-        protected virtual void OnAccountInfo(AccountEventArgs e) => CallEvent(e, AccountInfo);
+        protected virtual void OnGetAccountInfo(AccountEventArgs e) => CallEvent(e, GetAccountInfoEvent);
 
 
-        protected internal virtual void Opened() => // open account
+        protected internal virtual void Opened(Item item) // open account
+        {
+            ToHistory(this, item, "Received (on opening)", TypeHistoryEvent.GetMoney, DateTime.Now);
             OnOpened(new AccountEventArgs($"A new account of type {Type} has been opened. Account ID: {Id}."));
+        }
 
         protected internal virtual void Closed() // close account
         {
@@ -89,11 +89,11 @@ namespace BudgetLib.Account
         }
             
 
-        public virtual void Put(decimal sum) // put money to the account
+        public virtual void Put(Item item) // put money to the account
         {
-            if (sum > 0)
+            if (item.Sum > 0)
             {
-                if (Sum + sum > Limit)
+                if (Sum + item.Sum > Limit)
                 {
                     string message =
                         $"It is not possible to put on the account (the sum of money exceeds the account limit ({Limit} UAH)).\nReduce the sum of money, or change the account type.";
@@ -101,49 +101,57 @@ namespace BudgetLib.Account
                     throw new ArgumentException("Result sum of money more then limit of account");
                 }
 
-                Sum += sum;
-                OnPut(new AccountEventArgs($"The account was successfully replenished with {sum} UAH."));
+                Sum += item.Sum;
+                
+                ToHistory(this,item,"Received ",TypeHistoryEvent.GetMoney,DateTime.Now);
+                OnPut(new AccountEventArgs($"The account was successfully replenished with {item.Sum} UAH."));
             }
             else
             {
-                OnPut(new AccountEventArgs($"Unable to replenish account for {sum} UAH."));
+                OnPut(new AccountEventArgs($"Unable to replenish account for {item.Sum} UAH."));
                 throw new ArgumentException("Unreal to replenish account. Sum of money on this account <= 0");
             }
         }
 
-        public virtual void Withdraw(decimal sum) // withdraw money from account
+        public virtual void Withdraw(Item item) // withdraw money from account
         {
-            if (sum <= 0)
+            if (item.Sum <= 0)
             {
                 OnWithdrawed(new AccountEventArgs("It is impossible to withdraw less than 1 UAH."));
                 throw new ArgumentException("Parametr 'sum' must be more than 0");
             }
             
-            if (sum > Sum)
+            if (item.Sum > Sum)
             {
                 OnWithdrawed(new AccountEventArgs($"Insufficient UAH in the account. Current balance: {Sum} UAH."));
                 throw new ArgumentException("Not enough money in this account");
             }
 
-            Sum -= sum;
-            OnWithdrawed(new AccountEventArgs($"{sum} UAH was withdrawn from the account."));
+            Sum -= item.Sum;
+
+            ToHistory(this,item,"Withdrawn ",TypeHistoryEvent.GivenMoney,DateTime.Now);
+            OnWithdrawed(new AccountEventArgs($"{item.Sum} UAH was withdrawn from the account."));
         }
 
-        public virtual void Transfer(Account account, decimal sum) // transfer money to other account
+        public virtual void Transfer(Account account, Item item) // transfer money to other account
         {
-            if (sum <= 0)
+            if (item.Sum <= 0)
             {
-                OnWithdrawed(new AccountEventArgs("It is impossible to transfer less than 1 UAH."));
+                OnTransfer(new AccountEventArgs("It is impossible to transfer less than 1 UAH."));
                 throw new ArgumentException("Parametr 'sum' must be more than 0");
             }
             
-            if (Sum >= sum)
+            if (Sum >= item.Sum)
             {
-                if (account.Sum + sum < account.Limit)
+                if (account.Sum + item.Sum < account.Limit)
                 {
-                    Sum -= sum;
-                    account.Sum += sum;
-                    OnTransfer(new AccountEventArgs($"Transferred to another account (id <{Id}> -> id <{account.Id}>) with {sum} UAH."));
+                    Sum -= item.Sum;
+                    account.Sum += item.Sum;
+                    
+                    DateTime time = DateTime.Now;
+                    ToHistory(this,item,$"Transferred to account (id {account.Id}) ",TypeHistoryEvent.GivenMoney,time);
+                    ToHistory(account,item,$"Received by transfer from account (id {Id}) ",TypeHistoryEvent.GetMoney,time);
+                    OnTransfer(new AccountEventArgs($"Transferred to another account (id <{Id}> -> id <{account.Id}>) with {item.Sum} UAH."));
                 }
                 else
                 {
@@ -154,10 +162,19 @@ namespace BudgetLib.Account
             else
             {
                 OnTransfer(new AccountEventArgs("There are not enough money in this account to transfer."));
-                throw new ArgumentException($"Not enough money for transfer operation. Sum: {sum}");
+                throw new ArgumentException($"Not enough money for transfer operation. Sum: {item.Sum}");
             }
         }
 
+        private void ToHistory(Account account,Item item, string message, TypeHistoryEvent type, DateTime time)
+        {
+            HistoryStruct hst;
+            hst.Item = item;
+            hst.Message = message;
+            hst.Type = type;
+            hst.Time = time;
+            account._HistoryList.Add(hst);
+        }
         public void ChangeTypeAccount(AccountType type)
         {
             if (Sum > (decimal) type)
@@ -175,20 +192,11 @@ namespace BudgetLib.Account
             Limit = (decimal) type;
             OnChangeType(new AccountEventArgs($"Account type (id {Id}) changed to {type.ToString (). ToUpper ()}"));
         }
-        
-        // private void ToHistory(TypeHistoryEvent type,string message,Item item) // push to history of account
-        // {
-        //     HistoryStruct historyStruct;
-        //     historyStruct.Type = type;
-        //     historyStruct.Message = message;
-        //     historyStruct.Item = item;
-        //     _historyAccount.HistoryList.Add(historyStruct);
-        // }
-        
+
         public void GetAccountInfo() // get info about account
         {
             AccountEventArgs info = new AccountEventArgs($"Information for an account with id {Id}:",Sum){Id = Id,Type = Type,Limit = Limit,DataTime = RegData};
-            OnAccountInfo(info);
+            OnGetAccountInfo(info);
         }
     }
 }

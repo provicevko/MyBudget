@@ -1,10 +1,12 @@
-﻿namespace BudgetLib.Account
+﻿using BudgetLib.Budget;
+
+namespace BudgetLib.Account
 {
     internal interface IAccount
     {
-        public void Put(decimal sum);
-        public void Withdraw(decimal sum);
-        public void Transfer(Account account, decimal sum);
+        public void Put(Item item);
+        public void Withdraw(Item item);
+        public void Transfer(Account account, Item item);
         public int Id { get; }
         public decimal Sum { get; }
         

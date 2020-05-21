@@ -11,6 +11,7 @@
 
     <ItemGroup>
       <Compile Remove="MoneyItems.cs" />
+      <Compile Remove="EventHandlers\BudgetHandler.cs" />
     </ItemGroup>
 
 </Project>
