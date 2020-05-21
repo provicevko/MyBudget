@@ -33,7 +33,7 @@ namespace PConsole
             Console.WriteLine("Enter the initial amount of money in the account:");
             decimal sum = Convert.ToDecimal(Console.ReadLine());
             budget.OpenAccount(acType,sum,AccountHandler.OpenHandler,AccountHandler.CloseHandler, AccountHandler.PuHandler,
-                AccountHandler.WithdrawHandler,AccountHandler.TransferHandler);
+                AccountHandler.WithdrawHandler,AccountHandler.TransferHandler,AccountHandler.ChangeTypeAccount, AccountHandler.AccountInfoHandler);
         }
         internal static void AccountIdsList(Budget<Account> budget)
         {

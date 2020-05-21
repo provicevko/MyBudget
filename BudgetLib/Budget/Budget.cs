@@ -7,9 +7,7 @@ namespace BudgetLib.Budget
     public partial class Budget<T> : IBudget<T> where T : Account.Account
     {
         public event BudgetStateHandler FindAccountEvent;
-        public event BudgetStateHandler AccountInfo;
-        public event BudgetStateHandler OpenAccountEvent;
-        public event BudgetStateHandler ChangeTypeAccountEvent;
+        
         private List<T> _accounts = new List<T>(); // all accounts
         public string Name { get;} // name of budget
         public Budget(string name)
@@ -26,43 +24,20 @@ namespace BudgetLib.Budget
         }
 
         private void OnFindAccount(BudgetEventArgs e) => CallEvent(e, FindAccountEvent);
-        private void OnAccountInfo(BudgetEventArgs e) => CallEvent(e, AccountInfo);
-        private void OnOpenAccount(BudgetEventArgs e) => CallEvent(e, OpenAccountEvent);
-        private void OnChangeType(BudgetEventArgs e) => CallEvent(e, ChangeTypeAccountEvent);
         public void OpenAccount(AccountType type, decimal sum, AccountStateHandler openHandler, AccountStateHandler closeHandler, AccountStateHandler putHandler,
-            AccountStateHandler withdrawHandler, AccountStateHandler transferHandler) // open new account
+            AccountStateHandler withdrawHandler, AccountStateHandler transferHandler,AccountStateHandler changeTypeHandler,AccountStateHandler accountInfo) // open new account
         {
-            if (sum < 0)
-            {
-                OnOpenAccount(new BudgetEventArgs("The sum of money must be greater than or equal to 0."));
-                throw new ArgumentException("In order to open account 'sum' must be >= 0");
-            }
             T newAccount = default(T);
 
             switch (type)
             {
                 case AccountType.Small:
-                    if (sum > 1000)
-                    {
-                        OnOpenAccount(new BudgetEventArgs("For an account of type 'SMALL', the sum of money must be less than or equal to 1000 UAH."));
-                        throw new ArgumentException("Sum on account type 'SMALL' must be less than 1,000");
-                    }
                     newAccount = new SmallAccount(sum) as T;
                     break;
                 case AccountType.Middle:
-                    if (sum > 20000)
-                    {
-                        OnOpenAccount(new BudgetEventArgs("For an account of type 'MIDDLE', the sum of money must be less than or equal to 20000 UAH."));
-                        throw new ArgumentException("Sum on account type 'MIDDLE' must be less than 20,000");
-                    }
                     newAccount = new MiddleAccount(sum) as T;
                     break;
                 case AccountType.Premium:
-                    if (sum > 1000000)
-                    {
-                        OnOpenAccount(new BudgetEventArgs("For an account of type 'PREMIUM', the sum of money must be less than or equal to 1000000 UAH."));
-                        throw new ArgumentException("Sum on account type 'PREMIUM' must be less than 1,000,000");
-                    }
                     newAccount = new PremiumAccount(sum) as T;
                     break;
             }
@@ -79,8 +54,9 @@ namespace BudgetLib.Budget
             newAccount.PutEvent += putHandler;
             newAccount.WithdrawEvent += withdrawHandler;
             newAccount.TransferEvent += transferHandler;
+            newAccount.ChangeAccountTypeEvent += changeTypeHandler;
+            newAccount.AccountInfo += accountInfo;
             
-            OnOpenAccount(new BudgetEventArgs("Operation was successfully completed."));
             newAccount.Opened();
             newAccount.OpenEvent -= openHandler;
             ToHistory(newAccount, Account.Account.TypeHistoryEvent.GetMoney,
@@ -125,7 +101,7 @@ namespace BudgetLib.Budget
             }
         }
 
-        private void ToHistory(Account.Account account,Account.Account.TypeHistoryEvent type,string message,Item item) // push to history of account
+        private static void ToHistory(Account.Account account,Account.Account.TypeHistoryEvent type,string message,Item item) // push to history of account
         {
             Account.Account.HistoryStruct historyStruct;
             historyStruct.Type = type;
@@ -151,8 +127,7 @@ namespace BudgetLib.Budget
             {
                 throw new NullReferenceException($"Unreal find account with id {id}");
             }
-            BudgetEventArgs info = new BudgetEventArgs($"Information for an account with id {id}:",account.Sum){Id = id,Type = account.Type,Limit = account.Limit,DataTime = account.RegData};
-            OnAccountInfo(info);
+            account.GetAccountInfo();
         }
 
         public void ChangeTypeAccount(int id, AccountType type) // change type of account
@@ -162,15 +137,8 @@ namespace BudgetLib.Budget
             {
                 throw new NullReferenceException("Not find account with id {id}");
             }
-
-            if (account.Sum > (decimal) type)
-            {
-                OnChangeType(new BudgetEventArgs("Sum of money more than new accounts'LIMIT."));
-                throw new ArgumentException("Sum of money more than new accounts'LIMIT");
-            }
-            account.Type = type;
-            account.Limit = (decimal) type;
-            OnChangeType(new BudgetEventArgs($"Account type (id {id}) changed to {type.ToString (). ToUpper ()}"));
+            
+            account.ChangeTypeAccount(type);
             ToHistory(account, Account.Account.TypeHistoryEvent.GetMoney,
                 $"<Changed account type {DateTime.Now}>", new Item("opening",0));
         }

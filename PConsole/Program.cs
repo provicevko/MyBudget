@@ -14,14 +14,11 @@ namespace PConsole
 
             Budget<Account> budget = new Budget<Account>("Provice budget");
             budget.FindAccountEvent += BudgetHandler.FindAccountHandler;
-            budget.AccountInfo += BudgetHandler.AccountInfoHandler;
-            budget.OpenAccountEvent += BudgetHandler.OpenAccountHandler;
-            budget.ChangeTypeAccountEvent += BudgetHandler.ChangeTypeAccountAccount;
-           
+
             string description = "Commands:\n<> 'new' - open a new account.\n<> 'put' - put on the account.\n<> 'withdraw' - withdraw from the account.\n"+
                                  "<> 'transfer' - transfer to another account.\n<> 'search' - account search.\n<> 'mylist' - list of my accounts.\n"+
-            "<> 'ainfo' - account information.\n<> 'hinfo' - transaction history.\n<> 'tchange' - change account type.\n<> 'close' - close account.\n" +
-                "<> 'help' - list of commands.\n<> 'exit' - exit.";
+                                 "<> 'ainfo' - account information.\n<> 'hinfo' - transaction history.\n<> 'tchange' - change account type.\n<> 'close' - close account.\n" +
+                                 "<> 'help' - list of commands.\n<> 'exit' - exit.";
             Console.WriteLine(description);
             
             while (true)

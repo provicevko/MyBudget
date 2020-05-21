@@ -5,14 +5,11 @@ namespace BudgetLib.Budget
     internal interface IBudget<T> where T : Account.Account
     {
         public event BudgetStateHandler FindAccountEvent;
-        public event BudgetStateHandler AccountInfo;
-        public event BudgetStateHandler OpenAccountEvent;
-        public event BudgetStateHandler ChangeTypeAccountEvent;
         public string Name { get; }
 
         public void OpenAccount(AccountType type, decimal sum, AccountStateHandler openHandler,
             AccountStateHandler closeHandler, AccountStateHandler putHandler,
-            AccountStateHandler withdrawHandler, AccountStateHandler transferHandler);
+            AccountStateHandler withdrawHandler, AccountStateHandler transferHandler,AccountStateHandler changeTypeHandler,AccountStateHandler accountInfo);
 
         public void CloseAccount(int id);
         public T FindAccount(int id);

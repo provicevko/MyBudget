@@ -11,16 +11,24 @@ namespace BudgetLib.Account
         protected internal event AccountStateHandler PutEvent;
         protected internal event AccountStateHandler WithdrawEvent;
         protected internal event AccountStateHandler TransferEvent;
+        protected internal event AccountStateHandler ChangeAccountTypeEvent;
+        protected internal event AccountStateHandler AccountInfo;
+
+
         public decimal Sum { get; private set; } // sum of money
-        public decimal Limit { get; protected internal set; } // limit money
+        public decimal Limit { get; private set; } // limit money
         public int Id { get; } // accounts' id
-        public AccountType Type { get; protected internal set; } // type account
+        public AccountType Type { get; protected set; } // type account
         public DateTime RegData { get;} // register time
 
         private static int _idCounter = 0;
 
         protected internal Account(decimal sum, decimal limit)
         {
+            if (sum < 0 || sum > limit)
+            { 
+                throw new ArgumentException($"In order to open account 'sum = {sum}' must be >= 0 and <= {limit}");
+            }
             Sum = sum;
             Limit = limit;
             Id = ++_idCounter;
@@ -63,6 +71,9 @@ namespace BudgetLib.Account
         protected virtual void OnPut(AccountEventArgs e) => CallEvent(e, PutEvent);
         protected virtual void OnWithdrawed(AccountEventArgs e) => CallEvent(e, WithdrawEvent);
         protected virtual void OnTransfer(AccountEventArgs e) => CallEvent(e, TransferEvent);
+        protected virtual void OnChangeType(AccountEventArgs e) => CallEvent(e, ChangeAccountTypeEvent);
+        protected virtual void OnAccountInfo(AccountEventArgs e) => CallEvent(e, AccountInfo);
+
 
         protected internal virtual void Opened() => // open account
             OnOpened(new AccountEventArgs($"A new account of type {Type} has been opened. Account ID: {Id}."));
@@ -145,6 +156,39 @@ namespace BudgetLib.Account
                 OnTransfer(new AccountEventArgs("There are not enough money in this account to transfer."));
                 throw new ArgumentException($"Not enough money for transfer operation. Sum: {sum}");
             }
+        }
+
+        public void ChangeTypeAccount(AccountType type)
+        {
+            if (Sum > (decimal) type)
+            {
+                OnChangeType(new AccountEventArgs("Sum of money more than new accounts'LIMIT."));
+                throw new ArgumentException("Sum of money more than new accounts'LIMIT");
+            }
+
+            if (Type == type)
+            {
+                OnChangeType(new AccountEventArgs("The new type is equal to the current"));
+                throw new ArgumentException($"The new type is equal to the current (id {Id})");
+            }
+            Type = type;
+            Limit = (decimal) type;
+            OnChangeType(new AccountEventArgs($"Account type (id {Id}) changed to {type.ToString (). ToUpper ()}"));
+        }
+        
+        // private void ToHistory(TypeHistoryEvent type,string message,Item item) // push to history of account
+        // {
+        //     HistoryStruct historyStruct;
+        //     historyStruct.Type = type;
+        //     historyStruct.Message = message;
+        //     historyStruct.Item = item;
+        //     _historyAccount.HistoryList.Add(historyStruct);
+        // }
+        
+        public void GetAccountInfo() // get info about account
+        {
+            AccountEventArgs info = new AccountEventArgs($"Information for an account with id {Id}:",Sum){Id = Id,Type = Type,Limit = Limit,DataTime = RegData};
+            OnAccountInfo(info);
         }
     }
 }
