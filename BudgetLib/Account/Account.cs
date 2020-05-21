@@ -13,9 +13,6 @@ namespace BudgetLib.Account
         protected internal event AccountStateHandler WithdrawEvent;
         protected internal event AccountStateHandler TransferEvent;
         protected internal event AccountStateHandler ChangeAccountTypeEvent;
-        protected internal event AccountStateHandler GetAccountInfoEvent;
-
-
         public decimal Sum { get; private set; } // sum of money
         public decimal Limit { get; private set; } // limit money
         public int Id { get; } // accounts' id
@@ -69,7 +66,6 @@ namespace BudgetLib.Account
         protected virtual void OnWithdrawed(AccountEventArgs e) => CallEvent(e, WithdrawEvent);
         protected virtual void OnTransfer(AccountEventArgs e) => CallEvent(e, TransferEvent);
         protected virtual void OnChangeType(AccountEventArgs e) => CallEvent(e, ChangeAccountTypeEvent);
-        protected virtual void OnGetAccountInfo(AccountEventArgs e) => CallEvent(e, GetAccountInfoEvent);
 
 
         protected internal virtual void Opened(Item item) // open account
@@ -130,7 +126,7 @@ namespace BudgetLib.Account
             Sum -= item.Sum;
 
             ToHistory(this,item,"Withdrawn ",TypeHistoryEvent.GivenMoney,DateTime.Now);
-            OnWithdrawed(new AccountEventArgs($"{item.Sum} UAH was withdrawn from the account."));
+            OnWithdrawed(new AccountEventArgs($"{item.Sum} UAH was withdrawn from the account.",item.Sum));
         }
 
         public virtual void Transfer(Account account, Item item) // transfer money to other account
@@ -193,10 +189,9 @@ namespace BudgetLib.Account
             OnChangeType(new AccountEventArgs($"Account type (id {Id}) changed to {type.ToString (). ToUpper ()}"));
         }
 
-        public void GetAccountInfo() // get info about account
+        public Tuple<string,int,AccountType,decimal,decimal,DateTime> GetAccountInfo() // get info about account
         {
-            AccountEventArgs info = new AccountEventArgs($"Information for an account with id {Id}:",Sum){Id = Id,Type = Type,Limit = Limit,DataTime = RegData};
-            OnGetAccountInfo(info);
+            return Tuple.Create($"Information for an account with id {Id}",Id,Type,Limit,Sum,RegData);
         }
     }
 }

@@ -34,7 +34,7 @@ namespace PConsole
             Console.WriteLine("Enter the initial amount of money in the account:");
             decimal sum = Convert.ToDecimal(Console.ReadLine());
             budget.OpenAccount(acType,sum,AccountHandler.OpenHandler,AccountHandler.CloseHandler, AccountHandler.PuHandler,
-                AccountHandler.WithdrawHandler,AccountHandler.TransferHandler,AccountHandler.ChangeTypeAccount, AccountHandler.AccountInfoHandler);
+                AccountHandler.WithdrawHandler,AccountHandler.TransferHandler,AccountHandler.ChangeTypeAccount);
         }
         internal static void AccountIdsList(Budget<Account> budget)
         {
@@ -121,7 +121,8 @@ namespace PConsole
         {
             Console.WriteLine("Enter the account id:");
             int id = Convert.ToInt32(Console.ReadLine());
-            budget.GetAccountInfo(id);
+            var info = budget.GetAccountInfo(id);
+            Console.WriteLine($"{info.Item1}\n\tId: {info.Item2}\n\tType: {info.Item3}\n\tLimit: {info.Item4}\n\tSum: {info.Item5}\n\tRegister data: {info.Item6}");
         }
 
         internal static void HistoryInfo(Budget<Account> budget)

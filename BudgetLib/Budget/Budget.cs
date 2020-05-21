@@ -16,7 +16,7 @@ namespace BudgetLib.Budget
         }
 
         public void OpenAccount(AccountType type, decimal sum, AccountStateHandler openHandler, AccountStateHandler closeHandler, AccountStateHandler putHandler,
-            AccountStateHandler withdrawHandler, AccountStateHandler transferHandler,AccountStateHandler changeTypeHandler,AccountStateHandler accountInfo) // open new account
+            AccountStateHandler withdrawHandler, AccountStateHandler transferHandler,AccountStateHandler changeTypeHandler) // open new account
         {
             T newAccount = default(T);
 
@@ -46,13 +46,10 @@ namespace BudgetLib.Budget
             newAccount.WithdrawEvent += withdrawHandler;
             newAccount.TransferEvent += transferHandler;
             newAccount.ChangeAccountTypeEvent += changeTypeHandler;
-            newAccount.GetAccountInfoEvent += accountInfo;
-            
+
             Item item = new Item("opening",sum);
             newAccount.Opened(item);
             newAccount.OpenEvent -= openHandler;
-            // ToHistory(newAccount, Account.Account.TypeHistoryEvent.GetMoney,
-            //     $"<Received (at the opening) {DateTime.Now}>", new Item("opening",sum));
         }
         
         public void CloseAccount(int id) // close exist account
@@ -102,14 +99,14 @@ namespace BudgetLib.Budget
             
             return account.HistoryList;
         }
-        public void GetAccountInfo(int id) // get info about account
+        public Tuple<string, int, AccountType, decimal, decimal, DateTime> GetAccountInfo(int id) // get info about account
         {
             T account = FindAccount(id);
             if (account == null)
             {
                 throw new NullReferenceException($"Unreal find account with id {id}");
             }
-            account.GetAccountInfo();
+            return account.GetAccountInfo();
         }
 
         public void ChangeTypeAccount(int id, AccountType type) // change type of account
@@ -121,8 +118,6 @@ namespace BudgetLib.Budget
             }
             
             account.ChangeTypeAccount(type);
-            // ToHistory(account, Account.Account.TypeHistoryEvent.GetMoney,
-            //     $"<Changed account type {DateTime.Now}>", new Item("opening",0));
         }
     }
 }

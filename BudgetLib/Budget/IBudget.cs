@@ -1,4 +1,5 @@
-﻿using BudgetLib.Account;
+﻿using System;
+using BudgetLib.Account;
 
 namespace BudgetLib.Budget
 {
@@ -8,12 +9,12 @@ namespace BudgetLib.Budget
 
         public void OpenAccount(AccountType type, decimal sum, AccountStateHandler openHandler,
             AccountStateHandler closeHandler, AccountStateHandler putHandler,
-            AccountStateHandler withdrawHandler, AccountStateHandler transferHandler,AccountStateHandler changeTypeHandler,AccountStateHandler accountInfo);
+            AccountStateHandler withdrawHandler, AccountStateHandler transferHandler,AccountStateHandler changeTypeHandler);
 
         public void CloseAccount(int id);
         public T FindAccount(int id);
         private void ToHistory(Account.Account account, Account.Account.TypeHistoryEvent type, string message, decimal sum){}
-        public void GetAccountInfo(int id);
+        public Tuple<string, int, AccountType, decimal, decimal, DateTime> GetAccountInfo(int id);
         public void Put(int id,Item item);
         public void Withdraw(int id,Item item);
         public void Transfer(int id1, int id2,Item item);
