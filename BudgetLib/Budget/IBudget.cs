@@ -13,7 +13,6 @@ namespace BudgetLib.Budget
 
         public void CloseAccount(int id);
         public T FindAccount(int id);
-        private void ToHistory(Account.Account account, Account.Account.TypeHistoryEvent type, string message, decimal sum){}
         public Tuple<string, int, AccountType, decimal, decimal, DateTime> GetAccountInfo(int id);
         public void Put(int id,Item item);
         public void Withdraw(int id,Item item);
