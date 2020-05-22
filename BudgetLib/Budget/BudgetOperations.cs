@@ -34,6 +34,10 @@ namespace BudgetLib.Budget
 
         public void Transfer(int id1,int id2, Item item) // transfer money to other account
         {
+            if (item == null)
+            {
+                throw new ArgumentNullException("item");
+            }
             T account1 = FindAccount(id1);
             if (account1 == null)
             {

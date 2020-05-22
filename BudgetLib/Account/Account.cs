@@ -165,7 +165,7 @@ namespace BudgetLib.Account
             }
         }
 
-        private void ToHistory(Account account,Item item, string message, TypeHistoryEvent type, DateTime time)
+        private void ToHistory(Account account,Item item, string message, TypeHistoryEvent type, DateTime time) // insert to history of account
         {
             HistoryStruct hst;
             hst.Item = item;
@@ -174,7 +174,7 @@ namespace BudgetLib.Account
             hst.Time = time;
             account._HistoryList.Add(hst);
         }
-        public void ChangeTypeAccount(AccountType type)
+        public void ChangeTypeAccount(AccountType type) // change type of account
         {
             if (Sum > (decimal) type)
             {
