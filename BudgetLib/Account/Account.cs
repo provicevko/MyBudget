@@ -107,7 +107,7 @@ namespace BudgetLib.Account
             else
             {
                 OnPut(new AccountEventArgs($"Unable to replenish account for {item.Sum} UAH.",DateTime.Now));
-                throw new ArgumentException("Unreal to replenish account. Sum of money on this account <= 0");
+                throw new ArgumentException("Unreal to replenish account. Sum of money <= 0");
             }
         }
 
