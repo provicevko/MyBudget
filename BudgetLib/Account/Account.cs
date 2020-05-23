@@ -165,7 +165,7 @@ namespace BudgetLib.Account
             }
         }
 
-        private void ToHistory(Account account,Item item, string message, TypeHistoryEvent type, DateTime time) // insert to history of account
+        protected void ToHistory(Account account,Item item, string message, TypeHistoryEvent type, DateTime time) // insert to history of account
         {
             HistoryStruct hst;
             hst.Item = item;
